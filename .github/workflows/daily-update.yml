@@ -1,0 +1,60 @@
+name: Daily Knowledge Graph Update
+
+# ── Triggers ──────────────────────────────────────────────────────────────────
+on:
+  schedule:
+    # 06:00 UTC daily  (11:30 IST | 13:00 WIB Jakarta | 13:00 BKK | 11:30 LKA)
+    - cron: '0 6 * * *'
+
+  # Also allow one-click manual run from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run (optional)'
+        required: false
+        default: 'Manual refresh'
+
+# ── Permissions ───────────────────────────────────────────────────────────────
+permissions:
+  contents: write    # needed to commit index.html back to main
+
+# ── Job ───────────────────────────────────────────────────────────────────────
+jobs:
+  update-graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # 1. Check out the repo (full history not needed)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # 2. Set up Python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      # 3. Install dependencies
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # 4. Run the news fetcher — generates index.html and .nojekyll
+      - name: Fetch news & regenerate knowledge graph
+        run: python scripts/fetch_news.py
+
+      # 5. Commit and push the updated graph (skip if nothing changed)
+      - name: Commit and push updated graph
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html .nojekyll
+          if git diff --staged --quiet; then
+            echo "No changes to commit today."
+          else
+            git commit -m "auto: knowledge graph update $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

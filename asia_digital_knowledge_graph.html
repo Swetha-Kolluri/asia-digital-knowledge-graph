@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asia Digital Governance — Knowledge Graph | Week of April 14–18, 2026</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+#header {
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #30363d;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+}
+#header h1 { font-size: 17px; color: #58a6ff; font-weight: 700; white-space: nowrap; }
+.header-meta { font-size: 11px; color: #8b949e; line-height: 1.6; }
+.header-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #1f6feb22;
+  border: 1px solid #1f6feb55;
+  color: #58a6ff;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── LAYOUT ── */
+#content { display: flex; flex: 1; overflow: hidden; }
+#graph-container { flex: 1; position: relative; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 370px;
+  background: #161b22;
+  border-left: 1px solid #30363d;
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+#sidebar-header {
+  padding: 14px 16px;
+  background: #1c2128;
+  border-bottom: 1px solid #30363d;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+#sidebar-header h2 { font-size: 14px; font-weight: 600; color: #e6edf3; }
+#sidebar-header p  { font-size: 11px; color: #8b949e; margin-top: 3px; }
+
+.country-section { border-bottom: 1px solid #21262d; }
+.country-header {
+  padding: 11px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: background 0.15s;
+  user-select: none;
+}
+.country-header:hover { background: #1c2128; }
+.country-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.country-name { font-size: 13px; font-weight: 600; }
+.article-count { font-size: 10px; color: #8b949e; margin-left: auto; white-space: nowrap; }
+.chevron { color: #8b949e; font-size: 11px; margin-left: 4px; transition: transform 0.2s; }
+.country-header.open .chevron { transform: rotate(180deg); }
+
+.news-list { padding: 0 16px 10px; display: none; }
+.news-list.visible { display: block; }
+
+.news-item {
+  padding: 9px 0;
+  border-bottom: 1px solid #21262d;
+}
+.news-item:last-child { border-bottom: none; }
+
+.theme-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.news-title { font-size: 12px; color: #c9d1d9; line-height: 1.45; margin-bottom: 5px; font-weight: 500; }
+.news-summary { font-size: 11px; color: #8b949e; line-height: 1.55; margin-bottom: 6px; }
+.news-src { font-size: 10px; color: #6e7681; margin-bottom: 3px; }
+.news-link { font-size: 11px; color: #58a6ff; text-decoration: none; word-break: break-all; }
+.news-link:hover { text-decoration: underline; }
+
+/* ── FILTERS ── */
+#filters {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 460px;
+  z-index: 10;
+}
+.filter-btn {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  background: rgba(13, 17, 23, 0.85);
+  color: #8b949e;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.18s;
+  backdrop-filter: blur(8px);
+  font-family: inherit;
+}
+.filter-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
+.filter-btn.active { background: #1f6feb; border-color: #388bfd; color: #fff; }
+
+/* ── LEGEND ── */
+#legend {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: rgba(22, 27, 34, 0.92);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 11px 14px;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+#legend h4 { font-size: 10px; color: #8b949e; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.6px; }
+.legend-item { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { font-size: 11px; color: #c9d1d9; }
+
+/* ── INSTRUCTIONS ── */
+#instructions {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(22, 27, 34, 0.92);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 10px;
+  color: #8b949e;
+  line-height: 1.7;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+#instructions strong { color: #c9d1d9; }
+
+/* ── TOOLTIP ── */
+#tooltip {
+  position: fixed;
+  background: rgba(13, 17, 23, 0.97);
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 12px;
+  max-width: 300px;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  line-height: 1.5;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+#tooltip .tt-title { font-weight: 600; color: #e6edf3; margin-bottom: 4px; font-size: 12px; }
+#tooltip .tt-badge { font-size: 10px; margin-bottom: 5px; }
+#tooltip .tt-text  { color: #8b949e; font-size: 11px; }
+#tooltip .tt-hint  { color: #58a6ff; font-size: 10px; margin-top: 6px; font-style: italic; }
+
+svg text { user-select: none; }
+
+/* ── RESET BUTTON ── */
+#reset-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  background: rgba(13,17,23,0.85);
+  color: #8b949e;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  transition: all 0.18s;
+}
+#reset-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #161b22; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <h1>🌏 Asia Digital Governance &mdash; Knowledge Graph</h1>
+    <div class="header-meta">
+      Weekly News Update &nbsp;|&nbsp; <strong style="color:#c9d1d9">April 14–18, 2026</strong> &nbsp;|&nbsp;
+      Keywords: Digital ID &middot; DPI &middot; AI &middot; Data Exchange &middot; Political Instability &middot; Digital Leaders
+    </div>
+  </div>
+  <div class="header-meta" style="text-align:right; flex-shrink:0;">
+    <span class="header-badge">8 Countries</span>&nbsp;
+    <span class="header-badge">39 Articles</span>&nbsp;
+    <span class="header-badge">6 Themes</span><br>
+    <span style="font-size:10px;">Sources: Reuters &middot; AP &middot; BBC &middot; Jakarta Post &middot; Kompas &middot; Bisnis Indonesia &middot; Biometric Update &middot; Others</span>
+  </div>
+</div>
+
+<div id="content">
+  <div id="graph-container">
+    <svg id="graph"></svg>
+
+    <div id="filters">
+      <button class="filter-btn active" data-theme="all" onclick="filterByTheme('all',this)">All Themes</button>
+      <button class="filter-btn" data-theme="Digital ID" onclick="filterByTheme('Digital ID',this)" style="border-color:#e91e8c44">Digital ID</button>
+      <button class="filter-btn" data-theme="DPI" onclick="filterByTheme('DPI',this)" style="border-color:#4fc3f744">DPI</button>
+      <button class="filter-btn" data-theme="AI" onclick="filterByTheme('AI',this)" style="border-color:#81c78444">AI</button>
+      <button class="filter-btn" data-theme="Data Exchange" onclick="filterByTheme('Data Exchange',this)" style="border-color:#ffb74d44">Data Exchange</button>
+      <button class="filter-btn" data-theme="Political Instability" onclick="filterByTheme('Political Instability',this)" style="border-color:#ef535044">Political Instability</button>
+      <button class="filter-btn" data-theme="Digital Leaders" onclick="filterByTheme('Digital Leaders',this)" style="border-color:#ce93d844">Digital Leaders</button>
+    </div>
+
+    <button id="reset-btn" onclick="resetView()">↺ Reset View</button>
+
+    <div id="legend">
+      <h4>Theme Legend</h4>
+      <div class="legend-item"><div class="legend-dot" style="background:#e91e8c"></div><span class="legend-label">Digital ID</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div><span class="legend-label">Digital Public Infrastructure</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#81c784"></div><span class="legend-label">Artificial Intelligence</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffb74d"></div><span class="legend-label">Data Exchange</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div><span class="legend-label">Political Instability</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ce93d8"></div><span class="legend-label">Digital Leaders</span></div>
+      <div style="margin-top:7px;padding-top:7px;border-top:1px solid #21262d;">
+        <div class="legend-item"><div class="legend-dot" style="background:#58a6ff;width:18px;height:18px;"></div><span class="legend-label">Country Node</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#888;width:9px;height:9px;"></div><span class="legend-label">News Article Node</span></div>
+      </div>
+    </div>
+
+    <div id="instructions">
+      <strong>How to use:</strong><br>
+      🖱 Drag to move nodes &nbsp; | &nbsp; Scroll to zoom<br>
+      🔵 Click <strong>Country</strong> → highlight &amp; expand sidebar<br>
+      🟣 Click <strong>Article node</strong> → open source URL<br>
+      🔍 Filter buttons → show articles by theme
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <h2>Country News Details</h2>
+      <p>Click a country node in the graph, or expand below</p>
+    </div>
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════════
+const THEME_COLORS = {
+  'Digital ID':           '#e91e8c',
+  'DPI':                  '#4fc3f7',
+  'AI':                   '#81c784',
+  'Data Exchange':        '#ffb74d',
+  'Political Instability':'#ef5350',
+  'Digital Leaders':      '#ce93d8'
+};
+
+const COUNTRY_COLORS = {
+  'India':       '#FF7043',
+  'Indonesia':   '#26C6DA',
+  'Bangladesh':  '#42A5F5',
+  'Philippines': '#66BB6A',
+  'Thailand':    '#FFCA28',
+  'Sri Lanka':   '#AB47BC',
+  'Nepal':       '#8BC34A',
+  'PNG':         '#FFA726'
+};
+
+// ════════════════════════════════════════════════════════════
+// NEWS DATA  (39 articles, 8 countries)
+// ════════════════════════════════════════════════════════════
+const ARTICLES = [
+
+  // ── INDIA (6) ──────────────────────────────────────────
+  { id:'ind1', country:'India', theme:'Digital ID',
+    title:'India Showcases AI-Ready Digital Identity Infrastructure at Global Summit',
+    summary:'UIDAI rolls out AI-based biometric deduplication & document verification (Feb 2026). Aadhaar covers 1.44B residents; 2,707 crore authentications in 2024–25 alone. India signs DPI MoUs with 24 countries.',
+    source:'ID Tech Wire',
+    url:'https://idtechwire.com/india-showcases-ai-ready-digital-identity-infrastructure-at-global-summit/' },
+
+  { id:'ind2', country:'India', theme:'DPI',
+    title:'India Stack 2026: What Is Digital Public Infrastructure?',
+    summary:'India\'s four-layer DPI stack — Aadhaar (identity), UPI (payments), DigiLocker (paperless), Account Aggregator (consent) — is now the global benchmark. IMF calls India "leading example of digital infrastructure."',
+    source:'India Policy Hub',
+    url:'https://indiapolicyhub.in/2026/03/19/india-stack-digital-governance-india-dpi-explained/' },
+
+  { id:'ind3', country:'India', theme:'DPI',
+    title:'India\'s Digital Infrastructure Goes Global — What Kind of Power Is It Building?',
+    summary:'India has inked DPI-sharing agreements with 24 nations concentrated in SE Asia, Caribbean, Africa and Latin America, raising data-sovereignty questions. EY report highlights DPI + AI convergence for Viksit Bharat.',
+    source:'Tech Policy Press',
+    url:'https://www.techpolicy.press/indias-digital-infrastructure-is-going-global-what-kind-of-power-is-it-building/' },
+
+  { id:'ind4', country:'India', theme:'AI',
+    title:'India Turns to AI Infrastructure for Data-Driven Governance',
+    summary:'India launches NDAP and e-Sankhyiki AI governance platforms. IndiaAI Mission secures 10,000+ GPUs; 67 foundational model proposals reviewed. AIKosh open-data platform and voice LLMs for India\'s diverse languages launched.',
+    source:'Voice & Data',
+    url:'https://www.voicendata.com/artificialintelligence/india-turns-to-ai-infrastructure-for-data-driven-governance-11247785' },
+
+  { id:'ind5', country:'India', theme:'AI',
+    title:'The Man Who Made India Digital Isn\'t Done Yet — Nilekani on AI + Aadhaar',
+    summary:'MIT Technology Review profiles Nandan Nilekani\'s vision for personal AI agents for every Indian using Aadhaar as the authentication backbone; MIT Media Lab proposes AI agents navigating govt services for citizens.',
+    source:'MIT Technology Review',
+    url:'https://www.technologyreview.com/2026/01/07/1129748/aadhaar-nandan-nilekani-india-digital-biometric-identity-data/' },
+
+  { id:'ind6', country:'India', theme:'Digital Leaders',
+    title:'Key Bureaucrats: Bhuvnesh Kumar (UIDAI), Abhishek Singh (IndiaAI), S. Krishnan (MeitY)',
+    summary:'Bhuvnesh Kumar (IAS, MeitY) appointed UIDAI CEO. Abhishek Singh (MeitY/NIC) heads $1.2B IndiaAI Mission. S. Krishnan (MeitY Secy) champions Viksit Bharat 2047 DPI vision. Amitabh Kant co-chairs G20 DPI Task Force.',
+    source:'Analytics India Magazine / Paytm Blog',
+    url:'https://analyticsindiamag.com/ai-highlights/indias-100-most-influential-people-in-ai/' },
+
+  // ── INDONESIA (5) ─────────────────────────────────────
+  { id:'idn1', country:'Indonesia', theme:'Digital ID',
+    title:'Indonesia Aims to Boost IKD Digital ID Uptake — Only 17M of 270M Covered',
+    summary:'Identitas Kependudukan Digital (IKD) issued to just 17 million Indonesians, far below targets. Govt pledges simplified verification and broader public-service integration in 2026.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202502/indonesia-aims-to-boost-digital-id-uptake-in-bid-for-greater-efficiency' },
+
+  { id:'idn2', country:'Indonesia', theme:'AI',
+    title:'Indonesia\'s AI National Roadmap: Sovereign Digital Future by 2030',
+    summary:'Indonesia publishes AI National Roadmap White Paper (Jul 2025); ranks #1 in SE Asia for AI investment ($4.6B, 2020–2024). Sector-specific AI regulations planned for finance, healthcare and HR.',
+    source:'PS Engage',
+    url:'https://ps-engage.com/indonesias-ai-national-roadmap-white-paper-paving-the-way-toward-a-smarter-and-sovereign-digital-future/' },
+
+  { id:'idn3', country:'Indonesia', theme:'DPI',
+    title:'Indonesia Digital Transformation Market 2026: $29B and Growing at 19% CAGR',
+    summary:'Indonesia\'s digital transformation market grows from $24.4B (2025) to $29B (2026), forecast $69.6B by 2031. Government doubles IT spending. Microsoft, Google and AWS all expanding data-centre capacity.',
+    source:'Digital in Asia',
+    url:'https://digitalinasia.com/2026/04/03/indonesia-digital-market-overview-2026/' },
+
+  { id:'idn4', country:'Indonesia', theme:'Data Exchange',
+    title:'SATUSEHAT: Indonesia\'s National Health Data Exchange Becomes Mandatory',
+    summary:'SATUSEHAT interoperability compliance is now a decisive criterion in government health IT procurement. National data exchange sits at the core of Indonesia\'s DPI ambitions for 2026.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202512/indonesia-plans-major-digital-infrastructure-investments-to-boost-economy' },
+
+  { id:'idn5', country:'Indonesia', theme:'Digital Leaders',
+    title:'Minister Meutya Hafid Reshapes Indonesia\'s Digital Agenda After Budi Arie Exit',
+    summary:'Meutya Hafid replaces Budi Arie Setiadi as Communications Minister, refocusing on child online safety and combating gambling, while AI and DPI investments continue under Prabowo administration.',
+    source:'Jakarta Globe',
+    url:'https://jakartaglobe.id/tech/new-communication-minister-meutya-hafid-focuses-on-protecting-children-and-combating-online-gambling' },
+
+  // ── BANGLADESH (5) ────────────────────────────────────
+  { id:'bgd1', country:'Bangladesh', theme:'Political Instability',
+    title:'AI and Synthetic Reality Shaped Bangladesh\'s 2026 Election',
+    summary:'72 documented cases of AI-manipulated content during the 12 Feb 2026 election. Deepfake videos of exiled PM Sheikh Hasina circulated widely. Bangladesh\'s first AI-saturated election — "seeing is no longer believing."',
+    source:'Global Voices',
+    url:'https://globalvoices.org/2026/04/01/how-artificial-intelligence-and-synthetic-reality-shaped-bangladeshs-2026-election/' },
+
+  { id:'bgd2', country:'Bangladesh', theme:'Political Instability',
+    title:'How External Digital Actors Are Influencing Bangladesh\'s Political Discourse',
+    summary:'Foreign digital interference tracked ahead of 2026 election. Interim govt under Nobel laureate Muhammad Yunus tries to build digital guardrails after Hasina-era Digital Security Act abuses.',
+    source:'Global Policy Journal',
+    url:'https://www.globalpolicyjournal.com/blog/10/02/2026/how-external-digital-actors-are-influencing-bangladeshs-political-discourse-ahead' },
+
+  { id:'bgd3', country:'Bangladesh', theme:'AI',
+    title:'Bangladesh National AI Policy 2026–2030: Bold Start, Weak Implementation',
+    summary:'Risk-based regulatory framework, ban on mass surveillance and mandatory algorithmic impact assessments drafted. But oversight body (NDGIA) not yet operational; Independent Oversight Committee awaits Act of Parliament.',
+    source:'Policy Magazine (Canada)',
+    url:'https://www.policymagazine.ca/bangladeshs-ai-moment-testing-the-implementation-gap/' },
+
+  { id:'bgd4', country:'Bangladesh', theme:'DPI',
+    title:'Bangladesh Election 2026 Reveals a Transformed Political Landscape',
+    summary:'Chatham House analysis: 18 months of Yunus interim govt preceded Feb 2026 elections. Digital governance reforms — including repeal of the Digital Security Act — tested amid a fragile democratic transition.',
+    source:'Chatham House',
+    url:'https://www.chathamhouse.org/2026/02/bangladesh-election-reveals-transformed-political-landscape' },
+
+  { id:'bgd5', country:'Bangladesh', theme:'Digital Leaders',
+    title:'Yunus Government Pushes Digital Reforms; Digital Security Act Repealed',
+    summary:'Interim PM Yunus-led government repeals oppressive Digital Security Act, launches AI policy consultations and seeks to re-establish Bangladesh as a credible digital governance actor in the region.',
+    source:'The Daily Star',
+    url:'https://www.thedailystar.net/business/column/news/how-ready-bangladesh-era-ai-4063926' },
+
+  // ── PHILIPPINES (5) ───────────────────────────────────
+  { id:'phl1', country:'Philippines', theme:'Digital ID',
+    title:'Philippines Reaches 84 Million Digital IDs — 73% National Adoption Rate',
+    summary:'PhilSys National ID reaches 84M registrations (March 2026). 73% adoption rate. President champions Digital ID for inclusive public services across 7,000+ islands. Biometric deduplication confirms 80%+ population coverage.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202503/philippines-reaches-84-million-digital-ids-amid-dpi-rollout' },
+
+  { id:'phl2', country:'Philippines', theme:'Data Exchange',
+    title:'Philippines Plans Healthcare Data Exchange via PhilSys-PhilHealth Integration',
+    summary:'PhilHealth and PSA sign MoU (April 2026) to integrate PhilSys into healthcare claims verification. AI-assisted validation, liveness checks and tamper detection added to prevent fraud in health system.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202604/philippines-plans-id-verification-for-healthcare-with-philsys-integration' },
+
+  { id:'phl3', country:'Philippines', theme:'DPI',
+    title:'Philippines Hosts MOSIP Connect 2025; Advances Open-Source DPI Strategy',
+    summary:'Philippines hosted MOSIP Connect in Manila. eGovPH Super App provides one-stop government services platform. Philippines positions itself as SE Asia leader in open-source DPI architecture.',
+    source:'UNESCAP CRVS',
+    url:'https://crvs.unescap.org/news/philippines-president-champions-digital-id-inclusive-public-services' },
+
+  { id:'phl4', country:'Philippines', theme:'AI',
+    title:'How the Philippines Hit 73% Digital ID Adoption via AI-Backed Biometrics',
+    summary:'PhilSys uses AI-backed biometric deduplication and third-party liveness checks. System ensures certificates are released only to rightful owners through multi-layer AI fraud detection.',
+    source:'Dock.io / Biometric Update',
+    url:'https://www.dock.io/post/how-the-philippines-hit-73-digital-id-adoption' },
+
+  { id:'phl5', country:'Philippines', theme:'Digital Leaders',
+    title:'PSA and PhilSys: Driving National ID Rollout as DPI Backbone',
+    summary:'Philippine Statistics Authority (PSA) leads PhilSys expansion. President Marcos champions national ID as the foundation for a cashless, paperless, and presenceless digital economy.',
+    source:'PhilSys Official',
+    url:'https://philsys.gov.ph/psa-national-id-continues-to-enable-improved-delivery-of-services-to-the-public/' },
+
+  // ── THAILAND (4) ──────────────────────────────────────
+  { id:'tha1', country:'Thailand', theme:'AI',
+    title:'Thailand Accelerates AI with $1B Cloud Investments from Microsoft and Google',
+    summary:'Microsoft pledges $1B+ for cloud/AI in Thailand; Google Cloud opens Bangkok cloud region under its $1B plan. Thailand AI market forecast at $1.16B (2025), growing 26% annually through 2031.',
+    source:'Noah News / Nation Thailand',
+    url:'https://noah-news.com/thailand-accelerates-digital-push-with-1-billion-cloud-and-ai-investments-amidst-regulatory-overhaul/' },
+
+  { id:'tha2', country:'Thailand', theme:'DPI',
+    title:'Thailand Digital Economy Forecast to Grow 4.2% in 2026 — Double GDP Rate',
+    summary:'Thai digital economy to reach 5.6 trillion baht (~$171B) in 2026. All public agencies mandated to fully transition to digital systems by 2026. State agency IT spending to hit 30% of budget by 2027.',
+    source:'The Nation Thailand',
+    url:'https://www.nationthailand.com/business/economy/40057845' },
+
+  { id:'tha3', country:'Thailand', theme:'AI',
+    title:'Thailand Outlines National AI Strategy: 10M AI Users, 90K Professionals Targeted',
+    summary:'National AI Plan (2022–2027) targets 10M AI users, 90K professionals and 50K developers. Ministry of Digital Economy releases draft AI law principles. No standalone AI statute yet enacted.',
+    source:'The Nation Thailand',
+    url:'https://www.nationthailand.com/business/tech/40049494' },
+
+  { id:'tha4', country:'Thailand', theme:'Digital Leaders',
+    title:'DGA CEO Sak Segkhoonthod Drives Thailand\'s Government AI Transformation',
+    summary:'Digital Government Agency (DGA) CEO outlines Thailand\'s government AI roadmap with automated public service delivery. Thailand Proof-of-Human technology launched alongside AI strategy rollout.',
+    source:'GovInsider Asia',
+    url:'https://govinsider.asia/intl-en/article/thailand-accelerates-cloud-and-ai-adoption-to-transform-public-services' },
+
+  // ── SRI LANKA (4) ─────────────────────────────────────
+  { id:'lka1', country:'Sri Lanka', theme:'Digital ID',
+    title:'Sri Lanka\'s SL-UDI Digital ID Launching Q3 2026 — In Final Procurement Stage',
+    summary:'Sri Lanka Unique Digital Identity (SL-UDI) funded by ₹10.4B Indian grant. MSI procurement to conclude imminently. President confirms Q3 2026 first-ID distribution. Full rollout: 18–24 months.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202602/sri-lanka-digital-id-launching-in-q3-this-year' },
+
+  { id:'lka2', country:'Sri Lanka', theme:'Data Exchange',
+    title:'Sri Lanka National Data Exchange (NDX) to Connect Digital ID and Public Services',
+    summary:'NDX platform will link SL-UDI to all e-government services. Under new data protection laws, data exchange can begin within 3–6 months — ahead of full DPI deployment.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202502/sri-lanka-national-data-exchange-to-connect-digital-id-and-public-services' },
+
+  { id:'lka3', country:'Sri Lanka', theme:'DPI',
+    title:'Sri Lanka Invests $120M in Digital Transformation — 2026 Budget',
+    summary:'35.6 billion LKR (~$120M) pledged in 2026 budget. Rs. 750M for new AI data centre. Lanka Government Cloud infrastructure upgrade, digital interface development and SL-UDI all included.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202511/sri-lanka-earmarks-millions-to-accelerate-digital-transformation-in-2026-budget' },
+
+  { id:'lka4', country:'Sri Lanka', theme:'Digital Leaders',
+    title:'Sri Lanka Deputy Minister Confirms SL-UDI in Final Stage; ICTA Leads Project',
+    summary:'Deputy Minister of Digital Economy confirms SL-UDI in final stage. ICTA (Information and Communication Technology Agency) oversees project with India-funded technical assistance and ADB support.',
+    source:'Biometric Update / ICTA',
+    url:'https://www.biometricupdate.com/202603/sri-lanka-digital-id-project-in-final-stage-digital-economy-deputy-minister' },
+
+  // ── NEPAL (4) ─────────────────────────────────────────
+  { id:'npl1', country:'Nepal', theme:'DPI',
+    title:'World Bank Approves $50M for Nepal\'s Digital Public Infrastructure',
+    summary:'World Bank ($50M lead) + ADB ($40M) fund Nepal\'s DPI overhaul: new national ID system, government-wide secure data exchange, integrated social registry, digital locker and citizen service portal.',
+    source:'World Bank / Biometric Update',
+    url:'https://www.biometricupdate.com/202602/world-bank-approves-50m-for-nepals-dpi-including-new-national-identity-system' },
+
+  { id:'npl2', country:'Nepal', theme:'Digital ID',
+    title:'Nepal\'s Nagarik App Rolled Out — But Government Offices Still Demand Paper',
+    summary:'Despite digital ID app launch, institutions keep demanding physical copies. Kathmandu Post investigates: core obstacle is outdated laws and inconsistent institutional mandates, not the technology itself.',
+    source:'Kathmandu Post / Biometric Update',
+    url:'https://kathmandupost.com/national/2026/03/23/nepal-built-a-digital-identity-app-so-why-do-government-offices-still-want-the-paper' },
+
+  { id:'npl3', country:'Nepal', theme:'Data Exchange',
+    title:'Nepal Links Citizenship and National ID Databases — First Interoperability Milestone',
+    summary:'Nepal establishes interoperability between CCMIS and NIMIS, linking two major identity databases previously in isolation. Pre-enrollment for national ID eliminated. Secure government-wide data exchange planned.',
+    source:'ID Tech Wire',
+    url:'https://idtechwire.com/nepal-establishes-interoperability-between-citizenship-and-national-id-systems/' },
+
+  { id:'npl4', country:'Nepal', theme:'AI',
+    title:'Nepal-India Tech Forum 2026: AI and Digital Infrastructure Cooperation',
+    summary:'Nepal and India hold Tech Forum 2026 in New Delhi to advance AI investment, digital identity interoperability and bilateral digital infrastructure cooperation. Nepal\'s National AI Policy 2025 also guides trajectory.',
+    source:'Rising Nepal Daily',
+    url:'https://risingnepaldaily.com/news/76316' },
+
+  // ── PNG (6) ───────────────────────────────────────────
+  { id:'png1', country:'PNG', theme:'Digital ID',
+    title:'PNG\'s SevisPass Digital ID Launches March 2026 — Expanded to Govt Contractors',
+    summary:'Papua New Guinea\'s SevisPass digital ID launched March 2026. Cabinet-approved National Digital Identity Policy 2025 mandates SevisPass for all business entities submitting government procurement bids.',
+    source:'DICT PNG (Official)',
+    url:'https://www.ict.gov.pg/89962/' },
+
+  { id:'png2', country:'PNG', theme:'Data Exchange',
+    title:'PNG Launches SevisDEx — National Data Exchange Connecting Full DPI Ecosystem',
+    summary:'SevisDEx connects SevisPass (identity), SevisPay (payments), SevisWallet (digital wallet) and SevisPortal into an integrated DPI ecosystem. AI adoption framework built on this modular interoperable stack.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202508/png-to-launch-data-exchange-platform-for-digital-id-system-in-2026' },
+
+  { id:'png3', country:'PNG', theme:'AI',
+    title:'PNG Must Build Digital Foundations to Lead AI Economy — DICT Chief',
+    summary:'PNG\'s immigration authority deploys AI-driven document verification — visa applications cut from days to minutes. DICT releases Draft National Sovereign Digital Transformation and AI Strategy for public consultation.',
+    source:'The PNG Sun',
+    url:'https://www.thepngsun.com/png-must-build-digital-foundations-to-lead-ai-economy-matainaho/' },
+
+  { id:'png4', country:'PNG', theme:'DPI',
+    title:'PNG DPI Rollout: Digital ID for KYC, Remote Bank Account Opening Piloted',
+    summary:'PNG pilots remote KYC using SevisPass for online bank account applications. AI adoption framework based on modular, interoperable DPI architecture aligned to SevisPass, SevisPay and SevisDEx.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202603/next-steps-in-papua-new-guineas-dpi-rollout-include-digital-id-for-kyc-ai-adoption' },
+
+  { id:'png5', country:'PNG', theme:'Digital Leaders',
+    title:'DICT PNG: Draft National Sovereign Digital Transformation and AI Strategy Released',
+    summary:'PNG\'s Department of ICT opens public consultation on sovereign AI strategy. Framework aims for trusted, coordinated, fiscally sustainable digital transformation. Endorsed by PM Marape\'s government.',
+    source:'DICT PNG (Official)',
+    url:'https://www.ict.gov.pg/png-releases-draft-national-sovereign-digital-transformation-and-ai-strategy-for-public-consultation/' },
+
+  { id:'png6', country:'PNG', theme:'Digital ID',
+    title:'PNG Expands Mandatory Digital ID to All Businesses Taking Government Contracts',
+    summary:'From April 2026, every business entity participating in state tenders must use SevisPass for digital authentication on all procurement submissions — a major step toward full DPI coverage.',
+    source:'Biometric Update',
+    url:'https://www.biometricupdate.com/202604/png-expands-mandatory-digital-id-to-businesses-taking-govt-contracts' }
+
+];
+
+// ════════════════════════════════════════════════════════════
+// BUILD GRAPH DATA
+// ════════════════════════════════════════════════════════════
+const countries = [...new Set(ARTICLES.map(d => d.country))];
+
+const graphNodes = [
+  { id:'_center', label:'Asia\nDigital\n2026', type:'center', r:28 }
+];
+
+countries.forEach(c => {
+  graphNodes.push({ id:c, label:c, type:'country', color:COUNTRY_COLORS[c], r:20, country:c });
+});
+
+ARTICLES.forEach(a => {
+  graphNodes.push({
+    id: a.id,
+    label: a.title.slice(0,35) + (a.title.length > 35 ? '…' : ''),
+    fullTitle: a.title,
+    type: 'news',
+    color: THEME_COLORS[a.theme],
+    theme: a.theme,
+    country: a.country,
+    summary: a.summary,
+    url: a.url,
+    source: a.source,
+    r: 8
+  });
+});
+
+const graphLinks = [];
+countries.forEach(c => {
+  graphLinks.push({ source:'_center', target:c, linkType:'country' });
+});
+ARTICLES.forEach(a => {
+  graphLinks.push({ source:a.country, target:a.id, linkType:'news' });
+});
+
+// ════════════════════════════════════════════════════════════
+// D3 FORCE SIMULATION
+// ════════════════════════════════════════════════════════════
+const container = document.getElementById('graph-container');
+let W = container.clientWidth;
+let H = container.clientHeight;
+
+const svg = d3.select('#graph')
+  .attr('width', W)
+  .attr('height', H);
+
+// Defs: glow filter
+const defs = svg.append('defs');
+const glowFilter = defs.append('filter').attr('id','glow');
+glowFilter.append('feGaussianBlur').attr('stdDeviation','3.5').attr('result','coloredBlur');
+const feMerge = glowFilter.append('feMerge');
+feMerge.append('feMergeNode').attr('in','coloredBlur');
+feMerge.append('feMergeNode').attr('in','SourceGraphic');
+
+const simulation = d3.forceSimulation(graphNodes)
+  .force('link', d3.forceLink(graphLinks).id(d => d.id)
+    .distance(d => d.linkType === 'country' ? 155 : 75)
+    .strength(d => d.linkType === 'country' ? 0.9 : 0.7))
+  .force('charge', d3.forceManyBody().strength(d => {
+    if (d.type === 'center')  return -1200;
+    if (d.type === 'country') return -400;
+    return -60;
+  }))
+  .force('center', d3.forceCenter(W/2, H/2))
+  .force('collision', d3.forceCollide(d => d.r + 7));
+
+const g = svg.append('g');
+
+// Zoom + pan
+const zoom = d3.zoom()
+  .scaleExtent([0.25, 4])
+  .on('zoom', e => g.attr('transform', e.transform));
+svg.call(zoom);
+
+// Links
+const linkSel = g.append('g').selectAll('line')
+  .data(graphLinks).join('line')
+  .attr('stroke', d => d.linkType === 'country' ? '#30363d' : '#21262d')
+  .attr('stroke-width', d => d.linkType === 'country' ? 1.5 : 0.8)
+  .attr('stroke-opacity', 0.75);
+
+// Nodes
+const nodeSel = g.append('g').selectAll('g')
+  .data(graphNodes).join('g')
+  .attr('cursor', d => d.type === 'news' ? 'pointer' : (d.type === 'country' ? 'pointer' : 'default'))
+  .call(d3.drag()
+    .on('start', (e,d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+    .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y; })
+    .on('end',   (e,d) => { if (!e.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; }));
+
+// Circles
+nodeSel.append('circle')
+  .attr('r', d => d.r)
+  .attr('fill', d => {
+    if (d.type==='center') return '#1f6feb';
+    return d.color;
+  })
+  .attr('stroke', d => {
+    if (d.type==='center') return '#388bfd';
+    if (d.type==='country') return d.color;
+    return d.color + '88';
+  })
+  .attr('stroke-width', d => d.type==='country' ? 2.5 : 1)
+  .attr('fill-opacity', d => d.type==='news' ? 0.72 : 0.9)
+  .style('filter', d => d.type!=='news' ? 'url(#glow)' : 'none');
+
+// Country + center labels
+nodeSel.filter(d => d.type==='country' || d.type==='center')
+  .append('text')
+  .attr('text-anchor','middle')
+  .attr('dy', d => d.type==='center' ? '0.35em' : '-27px')
+  .attr('font-size', d => d.type==='center' ? '10px' : '11px')
+  .attr('font-weight', '700')
+  .attr('fill', '#e6edf3')
+  .attr('pointer-events','none')
+  .text(d => d.type==='center' ? '🌏 Asia 2026' : d.label);
+
+// Theme-dot on news nodes
+nodeSel.filter(d => d.type==='news')
+  .append('circle')
+  .attr('r', 2.5)
+  .attr('fill','#fff')
+  .attr('fill-opacity', 0.5)
+  .attr('pointer-events','none');
+
+// Tooltip
+const tooltipEl = document.getElementById('tooltip');
+
+nodeSel.filter(d => d.type==='news')
+  .on('mouseover', (e,d) => {
+    tooltipEl.style.display='block';
+    tooltipEl.innerHTML = `
+      <div class="tt-title">${d.fullTitle}</div>
+      <div class="tt-badge">
+        <span style="display:inline-block;padding:2px 7px;border-radius:6px;background:${THEME_COLORS[d.theme]}22;color:${THEME_COLORS[d.theme]};border:1px solid ${THEME_COLORS[d.theme]}55;font-size:10px;font-weight:600">${d.theme}</span>
+        <span style="font-size:10px;color:#8b949e;margin-left:6px">${d.country} · ${d.source}</span>
+      </div>
+      <div class="tt-text">${d.summary}</div>
+      <div class="tt-hint">🔗 Click to open source URL</div>`;
+  })
+  .on('mousemove', e => {
+    const x = Math.min(e.clientX+14, window.innerWidth-310);
+    const y = Math.min(e.clientY-8, window.innerHeight-200);
+    tooltipEl.style.left = x+'px';
+    tooltipEl.style.top  = y+'px';
+  })
+  .on('mouseout', () => { tooltipEl.style.display='none'; })
+  .on('click', (e,d) => { window.open(d.url,'_blank'); });
+
+nodeSel.filter(d => d.type==='country')
+  .on('click', (e,d) => {
+    highlightCountry(d.id);
+    showSidebarCountry(d.id);
+  });
+
+// Tick
+simulation.on('tick', () => {
+  linkSel
+    .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+  nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+});
+
+// ════════════════════════════════════════════════════════════
+// FILTER & HIGHLIGHT
+// ════════════════════════════════════════════════════════════
+function filterByTheme(theme, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  nodeSel.selectAll('circle:first-child')
+    .attr('fill-opacity', d => {
+      if (theme==='all') return d.type==='news' ? 0.72 : 0.9;
+      if (d.type==='center' || d.type==='country') return 0.9;
+      return d.theme===theme ? 0.95 : 0.08;
+    });
+
+  linkSel.attr('stroke-opacity', d => {
+    if (theme==='all') return 0.75;
+    if (d.linkType==='country') return 0.4;
+    const tgt = graphNodes.find(n => n.id===(typeof d.target==='object' ? d.target.id : d.target));
+    return tgt && tgt.theme===theme ? 0.9 : 0.05;
+  });
+}
+
+function highlightCountry(countryId) {
+  nodeSel.selectAll('circle:first-child')
+    .attr('fill-opacity', d => {
+      if (d.type==='center') return 0.9;
+      if (d.type==='country') return d.id===countryId ? 1 : 0.3;
+      return d.country===countryId ? 0.95 : 0.08;
+    });
+  linkSel.attr('stroke-opacity', d => {
+    const src = typeof d.source==='object' ? d.source.id : d.source;
+    const tgt = typeof d.target==='object' ? d.target.id : d.target;
+    return (src===countryId || tgt===countryId) ? 0.95 : 0.05;
+  });
+}
+
+function resetView() {
+  // Reset filters
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.filter-btn[data-theme="all"]').classList.add('active');
+  nodeSel.selectAll('circle:first-child').attr('fill-opacity', d => d.type==='news' ? 0.72 : 0.9);
+  linkSel.attr('stroke-opacity', 0.75);
+  // Reset zoom
+  svg.transition().duration(600).call(zoom.transform, d3.zoomIdentity.translate(0,0).scale(1));
+}
+
+// ════════════════════════════════════════════════════════════
+// SIDEBAR
+// ════════════════════════════════════════════════════════════
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  let html = document.getElementById('sidebar-header').outerHTML;
+
+  countries.forEach(country => {
+    const arts = ARTICLES.filter(a => a.country===country);
+    const col = COUNTRY_COLORS[country];
+
+    // Country summary (500-word equivalent — key bullet points)
+    const summaryMap = {
+      'India': 'India leads global DPI with Aadhaar (1.44B enrolled), UPI, DigiLocker and Account Aggregator. UIDAI introduced AI biometric deduplication (Feb 2026). IndiaAI Mission ($1.2B) secured 10,000+ GPUs; AIKosh open-data platform launched. India has signed DPI export MoUs with 24 countries. Key figures: Bhuvnesh Kumar (UIDAI CEO), Abhishek Singh (IndiaAI Mission head), S. Krishnan (MeitY Secy), Amitabh Kant (G20 DPI co-chair). IMF cites India as the leading example of digital infrastructure globally.',
+      'Indonesia': 'Indonesia\'s IKD digital ID covers only 17M of 270M+ citizens — far below targets. Govt committed to simplifying verification and broadening public service integration. SATUSEHAT national health data exchange is now mandatory in govt IT procurement. Indonesia ranked #1 in SE Asia for AI investment ($4.6B, 2020–2024). New Communication Minister Meutya Hafid refocuses on child safety and anti-gambling while digital transformation market grows from $24.4B to $29B in 2026.',
+      'Bangladesh': '12 Feb 2026 national election was Bangladesh\'s first AI-saturated election with 72 documented cases of AI-manipulated content including deepfakes of exiled PM Hasina. Interim PM Muhammad Yunus leads fragile democratic transition. National AI Policy 2026–2030 adopts risk-based framework with ban on mass surveillance; oversight body not yet operational. Digital Security Act repealed. External digital actors tracked attempting to influence political discourse.',
+      'Philippines': 'PhilSys National ID reaches 84M registrations (73% adoption rate) by March 2026. PhilHealth and PSA sign MoU for healthcare ID verification (April 2026). AI-assisted biometric validation and liveness detection deployed. Philippines hosted MOSIP Connect 2025 in Manila advancing open-source DPI. eGovPH Super App provides one-stop government services. President Marcos champions presenceless, paperless and cashless digital services.',
+      'Thailand': 'Thailand\'s digital economy forecast to reach $171B (4.2% growth) in 2026 — twice the national GDP growth. Microsoft ($1B+) and Google Cloud ($1B) both expanding Thai AI/cloud infrastructure. National AI Plan (2022–2027) targets 10M AI users, 90K professionals and 50K developers. All public agencies mandated to complete digital transition by 2026. Ministry of Digital Economy drafting AI law. DGA CEO Sak Segkhoonthod leading government AI transformation.',
+      'Sri Lanka': 'Sri Lanka Unique Digital Identity (SL-UDI) project in final procurement stage; Q3 2026 launch confirmed by President. Funded by ₹10.4B Indian grant. National Data Exchange (NDX) can begin sharing within 3–6 months under new data protection laws. 2026 budget pledges $120M for digital transformation including Rs. 750M for AI data centre. ICTA leads project with ADB and India technical assistance.',
+      'Nepal': 'World Bank ($50M) + ADB ($40M) fund Nepal\'s full DPI overhaul: national ID, data exchange, integrated social registry, digital locker and citizen portal. Nagarik digital ID app rolled out but paper demands persist from govt offices due to outdated laws. CCMIS and NIMIS identity databases linked for the first time. Nepal-India Tech Forum 2026 in New Delhi advances bilateral AI and digital infrastructure cooperation. National AI Policy 2025 adopted.',
+      'PNG': 'SevisPass digital ID launched March 2026; expanded to mandatory authentication for all govt procurement businesses (April 2026). SevisDEx national data exchange connects SevisPass, SevisPay, SevisWallet and SevisPortal into full DPI stack. Immigration authority deploys AI document verification — visa processing cut from days to minutes. DICT releases Draft National Sovereign Digital Transformation and AI Strategy for public consultation. PNG positions itself for AI-led economic growth.'
+    };
+
+    html += `
+      <div class="country-section" id="sec-${country}">
+        <div class="country-header" id="hdr-${country}" onclick="toggleCountry('${country}')">
+          <div class="country-dot" style="background:${col}"></div>
+          <span class="country-name" style="color:${col}">${country}</span>
+          <span class="article-count">${arts.length} articles</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="news-list" id="nl-${country}">
+          <div style="padding:10px 0 12px;font-size:11px;color:#8b949e;line-height:1.6;border-bottom:1px solid #21262d;margin-bottom:8px">
+            <strong style="color:#c9d1d9;display:block;margin-bottom:4px">📰 Country Overview — Week of April 14–18, 2026</strong>
+            ${summaryMap[country]}
+          </div>
+          ${arts.map(a => `
+            <div class="news-item">
+              <span class="theme-badge" style="background:${THEME_COLORS[a.theme]}18;color:${THEME_COLORS[a.theme]};border:1px solid ${THEME_COLORS[a.theme]}44">${a.theme}</span>
+              <div class="news-title">${a.title}</div>
+              <div class="news-summary">${a.summary}</div>
+              <div class="news-src">Source: <strong>${a.source}</strong></div>
+              <a class="news-link" href="${a.url}" target="_blank" rel="noopener">🔗 ${a.url}</a>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  });
+
+  sidebar.innerHTML = html;
+}
+
+function toggleCountry(country) {
+  const nl  = document.getElementById('nl-'+country);
+  const hdr = document.getElementById('hdr-'+country);
+  const visible = nl.classList.toggle('visible');
+  hdr.classList.toggle('open', visible);
+}
+
+function showSidebarCountry(country) {
+  countries.forEach(c => {
+    const nl  = document.getElementById('nl-'+c);
+    const hdr = document.getElementById('hdr-'+c);
+    if (nl)  nl.classList.remove('visible');
+    if (hdr) hdr.classList.remove('open');
+  });
+  const nl  = document.getElementById('nl-'+country);
+  const hdr = document.getElementById('hdr-'+country);
+  if (nl)  { nl.classList.add('visible');  nl.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  if (hdr) { hdr.classList.add('open'); }
+}
+
+buildSidebar();
+
+// ════════════════════════════════════════════════════════════
+// RESIZE
+// ════════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  W = container.clientWidth;
+  H = container.clientHeight;
+  svg.attr('width', W).attr('height', H);
+  simulation.force('center', d3.forceCenter(W/2, H/2)).alpha(0.2).restart();
+});
+</script>
+</body>
+</html>
