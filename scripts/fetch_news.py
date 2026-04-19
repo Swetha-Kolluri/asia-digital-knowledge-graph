@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Asia Digital Governance Knowledge Graph — Daily Auto-Update Script
-=================================================================
+DPI News Asia Pacific — Daily Auto-Update Script
+=================================================
 Queries Google News RSS for 8 Asian countries on Digital / DPI / AI topics,
-generates an interactive D3.js knowledge graph, and writes index.html.
+generates a news bulletin HTML page, and writes index.html.
 
 Run locally:   python scripts/fetch_news.py
 Runs via:      GitHub Actions cron (see .github/workflows/daily-update.yml)
@@ -423,306 +423,160 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Asia Digital Governance — Knowledge Graph | __WEEK_LABEL__</title>
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<title>DPI News Asia Pacific | __WEEK_LABEL__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+:root{--gold:#c9a84c;--gold-light:#e8c96a;--bg:#0a0a0a;--card:#0e0e0e;--border:#1c1c1c;--border-light:#2a2a2a;--text:#e8e8e8;--text-dim:#888;--text-muted:#555;--serif:'Playfair Display',Georgia,serif;--sans:'Inter',system-ui,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-#header{background:linear-gradient(135deg,#161b22 0%,#0d1117 100%);border-bottom:1px solid #30363d;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:12px}
-#header h1{font-size:17px;color:#58a6ff;font-weight:700;white-space:nowrap}
-.hm{font-size:11px;color:#8b949e;line-height:1.6}
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;background:#1f6feb22;border:1px solid #1f6feb55;color:#58a6ff;font-size:10px;font-weight:600;white-space:nowrap}
-#content{display:flex;flex:1;overflow:hidden}
-#gc{flex:1;position:relative;overflow:hidden}
-#sb{width:370px;background:#161b22;border-left:1px solid #30363d;overflow-y:auto;flex-shrink:0}
-#sbh{padding:14px 16px;background:#1c2128;border-bottom:1px solid #30363d;position:sticky;top:0;z-index:10}
-#sbh h2{font-size:14px;font-weight:600;color:#e6edf3}
-#sbh p{font-size:11px;color:#8b949e;margin-top:3px}
-.cs{border-bottom:1px solid #21262d}
-.ch{padding:11px 16px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s;user-select:none}
-.ch:hover{background:#1c2128}
-.cd{width:11px;height:11px;border-radius:50%;flex-shrink:0}
-.cn{font-size:13px;font-weight:600}
-.ac{font-size:10px;color:#8b949e;margin-left:auto;white-space:nowrap}
-.chv{color:#8b949e;font-size:11px;margin-left:4px;transition:transform .2s}
-.ch.open .chv{transform:rotate(180deg)}
-.nl{padding:0 16px 10px;display:none}
-.nl.visible{display:block}
-.ni{padding:9px 0;border-bottom:1px solid #21262d}
-.ni:last-child{border-bottom:none}
-.tb{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;margin-bottom:5px}
-.nt{font-size:12px;color:#c9d1d9;line-height:1.45;margin-bottom:5px;font-weight:500}
-.ns{font-size:11px;color:#8b949e;line-height:1.55;margin-bottom:6px}
-.nr{font-size:10px;color:#6e7681;margin-bottom:3px}
-.nl a{font-size:11px;color:#58a6ff;text-decoration:none;word-break:break-all}
-.nl a:hover{text-decoration:underline}
-#filters{position:absolute;top:14px;left:14px;display:flex;flex-wrap:wrap;gap:5px;max-width:480px;z-index:10}
-.fb{padding:4px 10px;border-radius:12px;border:1px solid #30363d;background:rgba(13,17,23,.85);color:#8b949e;font-size:11px;cursor:pointer;transition:all .18s;backdrop-filter:blur(8px);font-family:inherit}
-.fb:hover{border-color:#58a6ff;color:#c9d1d9}
-.fb.active{background:#1f6feb;border-color:#388bfd;color:#fff}
-#legend{position:absolute;bottom:14px;left:14px;background:rgba(22,27,34,.92);border:1px solid #30363d;border-radius:8px;padding:11px 14px;backdrop-filter:blur(10px);z-index:10}
-#legend h4{font-size:10px;color:#8b949e;margin-bottom:7px;text-transform:uppercase;letter-spacing:.6px}
-.li{display:flex;align-items:center;gap:7px;margin-bottom:4px}
-.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ll{font-size:11px;color:#c9d1d9}
-#inst{position:absolute;bottom:14px;right:14px;background:rgba(22,27,34,.92);border:1px solid #30363d;border-radius:8px;padding:10px 13px;font-size:10px;color:#8b949e;line-height:1.7;backdrop-filter:blur(10px);z-index:10}
-#inst strong{color:#c9d1d9}
-#tt{position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:10px 13px;font-size:12px;max-width:300px;pointer-events:none;z-index:9999;display:none;line-height:1.5;box-shadow:0 4px 24px rgba(0,0,0,.5)}
-#tt .ttt{font-weight:600;color:#e6edf3;margin-bottom:4px;font-size:12px}
-#tt .ttb{font-size:10px;margin-bottom:5px}
-#tt .tts{color:#8b949e;font-size:11px}
-#tt .tth{color:#58a6ff;font-size:10px;margin-top:6px;font-style:italic}
-svg text{user-select:none}
-#rb{position:absolute;top:14px;right:14px;padding:5px 12px;border-radius:12px;border:1px solid #30363d;background:rgba(13,17,23,.85);color:#8b949e;font-size:11px;cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);z-index:10;transition:all .18s}
-#rb:hover{border-color:#58a6ff;color:#c9d1d9}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:#161b22}
-::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
-.upd{position:absolute;bottom:14px;right:220px;font-size:10px;color:#484f58;z-index:10;background:rgba(13,17,23,.7);padding:4px 8px;border-radius:6px;backdrop-filter:blur(4px)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;min-height:100vh}
+.masthead{background:#000;border-bottom:1px solid var(--border);padding:28px 24px 20px;text-align:center}
+.masthead-eyebrow{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.masthead-title{font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:700;color:#fff;line-height:1.1}
+.masthead-title .accent{color:var(--gold)}
+.masthead-meta{margin-top:12px;display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
+.masthead-meta span{font-size:11px;color:var(--text-muted);letter-spacing:.5px}
+.masthead-meta .pipe{color:var(--border-light)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4caf50;margin-right:5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ribbon{background:var(--gold);padding:7px 0;overflow:hidden;white-space:nowrap}
+.ribbon-inner{display:inline-block;animation:marquee 30s linear infinite;color:#000;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+@keyframes marquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+.tabs-wrap{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tabs{display:flex;align-items:center;padding:0 16px;gap:2px;min-width:max-content}
+.tab{padding:14px 16px;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;font-family:var(--sans)}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.main{max-width:1280px;margin:0 auto;padding:32px 20px 60px}
+.country-divider{display:flex;align-items:center;gap:16px;margin:48px 0 28px}
+.country-divider:first-child{margin-top:0}
+.country-divider h2{font-family:var(--serif);font-size:1.5rem;font-weight:600;color:#fff;white-space:nowrap}
+.country-divider .flag{font-size:1.4rem}
+.country-divider .line{flex:1;height:1px;background:linear-gradient(to right,var(--border-light),transparent)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s,transform .2s;cursor:pointer}
+.card:hover{border-color:var(--border-light);transform:translateY(-2px)}
+.card.featured{grid-column:span 2;flex-direction:row}
+@media(max-width:600px){.card.featured{grid-column:span 1;flex-direction:column}}
+.thumb{position:relative;overflow:hidden;flex-shrink:0}
+.card:not(.featured) .thumb{height:160px}
+.card.featured .thumb{width:260px;min-height:220px}
+@media(max-width:1024px){.card.featured .thumb{width:200px}}
+@media(max-width:600px){.card.featured .thumb{width:100%;height:180px}}
+.thumb-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.8rem;position:relative}
+.thumb-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.3),rgba(0,0,0,.6))}
+.thumb-flag{position:absolute;bottom:8px;right:10px;font-size:1.1rem;z-index:1;filter:drop-shadow(0 1px 3px rgba(0,0,0,.8))}
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:3px;border:1px solid currentColor}
+.card-country{font-size:11px;color:var(--text-muted);font-weight:500}
+.card-date{font-size:11px;color:var(--text-muted);margin-left:auto}
+.card-headline{font-family:var(--serif);font-size:1.05rem;font-weight:600;color:#fff;line-height:1.4}
+.card.featured .card-headline{font-size:1.25rem}
+.card-summary{font-size:13px;color:var(--text-dim);line-height:1.65;flex:1}
+.card-source{font-size:11px;color:var(--text-muted)}
+.card-link{display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.3px;transition:color .2s;margin-top:4px}
+.card-link:hover{color:var(--gold-light)}
+.card-link svg{width:12px;height:12px}
+.sources-section{border-top:1px solid var(--border);margin-top:64px;padding-top:40px;padding-bottom:40px}
+.sources-section h3{font-family:var(--serif);font-size:1.1rem;font-weight:600;color:var(--gold);margin-bottom:20px;text-align:center}
+.sources-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:900px;margin:0 auto}
+.source-tag{font-size:11px;color:var(--text-muted);border:1px solid var(--border);border-radius:4px;padding:5px 12px}
+.footer-copy{text-align:center;margin-top:28px;font-size:11px;color:var(--text-muted)}
+.empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.empty h3{font-family:var(--serif);font-size:1.3rem;margin-bottom:8px;color:var(--text-dim)}
+.theme-digital-id{color:#a78bfa;border-color:#a78bfa}
+.theme-dpi{color:#60a5fa;border-color:#60a5fa}
+.theme-ai{color:#34d399;border-color:#34d399}
+.theme-data-exchange{color:#fbbf24;border-color:#fbbf24}
+.theme-political{color:#f87171;border-color:#f87171}
+.theme-digital-leaders{color:#c084fc;border-color:#c084fc}
+.theme-digital{color:#38bdf8;border-color:#38bdf8}
 </style>
 </head>
 <body>
-<div id="header">
-  <div>
-    <h1>&#127758; Asia Digital Governance &mdash; Knowledge Graph</h1>
-    <div class="hm">Weekly News Update &nbsp;|&nbsp; <strong style="color:#c9d1d9" id="wl">__WEEK_LABEL__</strong> &nbsp;|&nbsp; Digital ID &middot; DPI &middot; AI &middot; Data Exchange &middot; Political Instability &middot; Digital Leaders</div>
+<header class="masthead">
+  <div class="masthead-eyebrow">Digital Public Infrastructure &middot; Weekly Intelligence</div>
+  <h1 class="masthead-title">DPI News <span class="accent">Asia Pacific</span></h1>
+  <div class="masthead-meta">
+    <span id="weekLabel">__WEEK_LABEL__</span>
+    <span class="pipe">|</span>
+    <span><span class="live-dot"></span>Auto-updated daily</span>
+    <span class="pipe">|</span>
+    <span id="articleCount">__ARTICLE_COUNT__ articles this week</span>
   </div>
-  <div class="hm" style="text-align:right;flex-shrink:0">
-    <span class="badge">8 Countries</span>&nbsp;
-    <span class="badge">__ARTICLE_COUNT__ Articles</span>&nbsp;
-    <span class="badge">Live Updates</span><br>
-    <span style="font-size:10px">Reuters &middot; AP &middot; BBC &middot; Jakarta Post &middot; Kompas &middot; Bisnis Indonesia &middot; Biometric Update &middot; + more</span>
-  </div>
+</header>
+<div class="ribbon">
+  <span class="ribbon-inner">Digital Identity &nbsp;&middot;&nbsp; DPI &nbsp;&middot;&nbsp; Artificial Intelligence &nbsp;&middot;&nbsp; Data Exchange &nbsp;&middot;&nbsp; Political Instability &nbsp;&middot;&nbsp; Digital Leaders &nbsp;&middot;&nbsp; Digital Identity &nbsp;&middot;&nbsp; DPI &nbsp;&middot;&nbsp; Artificial Intelligence &nbsp;&middot;&nbsp; Data Exchange &nbsp;&middot;&nbsp; Political Instability &nbsp;&middot;&nbsp; Digital Leaders &nbsp;&middot;&nbsp;</span>
 </div>
-<div id="content">
-  <div id="gc">
-    <svg id="graph"></svg>
-    <div id="filters">
-      <button class="fb active" data-theme="all" onclick="filterTheme('all',this)">All Themes</button>
-      <button class="fb" data-theme="Digital ID" onclick="filterTheme('Digital ID',this)" style="border-color:#e91e8c44">Digital ID</button>
-      <button class="fb" data-theme="DPI" onclick="filterTheme('DPI',this)" style="border-color:#4fc3f744">DPI</button>
-      <button class="fb" data-theme="AI" onclick="filterTheme('AI',this)" style="border-color:#81c78444">AI</button>
-      <button class="fb" data-theme="Data Exchange" onclick="filterTheme('Data Exchange',this)" style="border-color:#ffb74d44">Data Exchange</button>
-      <button class="fb" data-theme="Political Instability" onclick="filterTheme('Political Instability',this)" style="border-color:#ef535044">Political Instability</button>
-      <button class="fb" data-theme="Digital Leaders" onclick="filterTheme('Digital Leaders',this)" style="border-color:#ce93d844">Digital Leaders</button>
-    </div>
-    <button id="rb" onclick="resetView()">&#8635; Reset</button>
-    <div id="legend">
-      <h4>Theme Legend</h4>
-      <div class="li"><div class="ld" style="background:#e91e8c"></div><span class="ll">Digital ID</span></div>
-      <div class="li"><div class="ld" style="background:#4fc3f7"></div><span class="ll">Digital Public Infrastructure</span></div>
-      <div class="li"><div class="ld" style="background:#81c784"></div><span class="ll">Artificial Intelligence</span></div>
-      <div class="li"><div class="ld" style="background:#ffb74d"></div><span class="ll">Data Exchange</span></div>
-      <div class="li"><div class="ld" style="background:#ef5350"></div><span class="ll">Political Instability</span></div>
-      <div class="li"><div class="ld" style="background:#ce93d8"></div><span class="ll">Digital Leaders</span></div>
-      <div style="margin-top:7px;padding-top:7px;border-top:1px solid #21262d">
-        <div class="li"><div class="ld" style="background:#58a6ff;width:18px;height:18px"></div><span class="ll">Country Node</span></div>
-        <div class="li"><div class="ld" style="background:#555;width:9px;height:9px"></div><span class="ll">Article (click = open URL)</span></div>
-      </div>
-    </div>
-    <div id="inst"><strong>How to use:</strong><br>Scroll to zoom &nbsp;|&nbsp; Drag to move<br>&#128309; Click <strong>country</strong> &rarr; expand sidebar<br>&#128311; Click <strong>article node</strong> &rarr; open URL<br>Filter buttons &rarr; show by theme</div>
-    <div class="upd">Last updated: __UPDATE_TIME__</div>
-  </div>
-  <div id="sb">
-    <div id="sbh"><h2>Country News Details</h2><p>Click a country node or expand below</p></div>
-  </div>
-</div>
-<div id="tt"></div>
+<nav class="tabs-wrap"><div class="tabs" id="tabs"></div></nav>
+<main class="main" id="main"></main>
+<div class="main sources-section" id="sources"></div>
 <script>
-// ════════════════════════════════════════════════════════════════
-// DATA  (auto-injected daily by scripts/fetch_news.py)
-// ════════════════════════════════════════════════════════════════
 /*__DATA_INJECT__*/
-// ════════════════════════════════════════════════════════════════
-// GRAPH SETUP
-// ════════════════════════════════════════════════════════════════
-const countries = COUNTRIES;
-
-const gNodes = [{id:'_c',label:'Asia\\nDigital\\n2026',type:'center',r:28}];
-countries.forEach(c => gNodes.push({id:c,label:c,type:'country',color:COUNTRY_COLORS[c],r:20,country:c}));
-ARTICLES.forEach(a => gNodes.push({
-  id:a.id, label:a.title.slice(0,35)+(a.title.length>35?'\\u2026':''),
-  fullTitle:a.title, type:'news', color:THEME_COLORS[a.theme],
-  theme:a.theme, country:a.country, summary:a.summary,
-  url:a.url, source:a.source, date:a.date||'', r:8
-}));
-
-const gLinks=[];
-countries.forEach(c => gLinks.push({source:'_c',target:c,lt:'country'}));
-ARTICLES.forEach(a => gLinks.push({source:a.country,target:a.id,lt:'news'}));
-
-const gc=document.getElementById('gc');
-let W=gc.clientWidth, H=gc.clientHeight;
-const svg=d3.select('#graph').attr('width',W).attr('height',H);
-const defs=svg.append('defs');
-const gf=defs.append('filter').attr('id','glow');
-gf.append('feGaussianBlur').attr('stdDeviation','3.5').attr('result','coloredBlur');
-const fm=gf.append('feMerge');
-fm.append('feMergeNode').attr('in','coloredBlur');
-fm.append('feMergeNode').attr('in','SourceGraphic');
-
-const sim=d3.forceSimulation(gNodes)
-  .force('link',d3.forceLink(gLinks).id(d=>d.id).distance(d=>d.lt==='country'?155:75).strength(d=>d.lt==='country'?.9:.7))
-  .force('charge',d3.forceManyBody().strength(d=>d.type==='center'?-1200:d.type==='country'?-400:-60))
-  .force('center',d3.forceCenter(W/2,H/2))
-  .force('collision',d3.forceCollide(d=>d.r+7));
-
-const g=svg.append('g');
-const zoomBeh=d3.zoom().scaleExtent([.25,4]).on('zoom',e=>g.attr('transform',e.transform));
-svg.call(zoomBeh);
-
-const lnk=g.append('g').selectAll('line').data(gLinks).join('line')
-  .attr('stroke',d=>d.lt==='country'?'#30363d':'#21262d')
-  .attr('stroke-width',d=>d.lt==='country'?1.5:.8)
-  .attr('stroke-opacity',.75);
-
-const nd=g.append('g').selectAll('g').data(gNodes).join('g')
-  .attr('cursor',d=>d.type==='news'?'pointer':d.type==='country'?'pointer':'default')
-  .call(d3.drag()
-    .on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
-    .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y})
-    .on('end',  (e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null}));
-
-nd.append('circle')
-  .attr('r',d=>d.r)
-  .attr('fill',d=>d.type==='center'?'#1f6feb':d.color)
-  .attr('stroke',d=>d.type==='center'?'#388bfd':d.type==='country'?d.color:d.color+'88')
-  .attr('stroke-width',d=>d.type==='country'?2.5:1)
-  .attr('fill-opacity',d=>d.type==='news'?.72:.9)
-  .style('filter',d=>d.type!=='news'?'url(#glow)':'none');
-
-nd.filter(d=>d.type==='country'||d.type==='center')
-  .append('text').attr('text-anchor','middle')
-  .attr('dy',d=>d.type==='center'?'0.35em':'-27px')
-  .attr('font-size',d=>d.type==='center'?'10px':'11px')
-  .attr('font-weight','700').attr('fill','#e6edf3')
-  .attr('pointer-events','none')
-  .text(d=>d.type==='center'?'\\uD83C\\uDF0F Asia 2026':d.label);
-
-nd.filter(d=>d.type==='news')
-  .append('circle').attr('r',2.5).attr('fill','#fff').attr('fill-opacity',.4).attr('pointer-events','none');
-
-const tte=document.getElementById('tt');
-nd.filter(d=>d.type==='news')
-  .on('mouseover',(e,d)=>{
-    tte.style.display='block';
-    tte.innerHTML=`<div class="ttt">${d.fullTitle}</div>
-      <div class="ttb"><span style="display:inline-block;padding:2px 7px;border-radius:6px;background:${THEME_COLORS[d.theme]}22;color:${THEME_COLORS[d.theme]};border:1px solid ${THEME_COLORS[d.theme]}55;font-size:10px;font-weight:600">${d.theme}</span>
-      <span style="font-size:10px;color:#8b949e;margin-left:6px">${d.country} &middot; ${d.source}</span></div>
-      <div class="tts">${d.summary}</div>
-      <div class="tth">&#128279; Click to open source URL</div>`;
-  })
-  .on('mousemove',e=>{
-    tte.style.left=Math.min(e.clientX+14,window.innerWidth-310)+'px';
-    tte.style.top=Math.min(e.clientY-8,window.innerHeight-220)+'px';
-  })
-  .on('mouseout',()=>{tte.style.display='none'})
-  .on('click',(e,d)=>window.open(d.url,'_blank'));
-
-nd.filter(d=>d.type==='country')
-  .on('click',(e,d)=>{hlCountry(d.id);showSbCountry(d.id)});
-
-sim.on('tick',()=>{
-  lnk.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
-     .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
-  nd.attr('transform',d=>`translate(${d.x},${d.y})`);
-});
-
-function filterTheme(theme,btn){
-  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  nd.selectAll('circle:first-child').attr('fill-opacity',d=>{
-    if(theme==='all') return d.type==='news'?.72:.9;
-    if(d.type==='center'||d.type==='country') return .9;
-    return d.theme===theme?.95:.08;
-  });
-  lnk.attr('stroke-opacity',d=>{
-    if(theme==='all') return .75;
-    if(d.lt==='country') return .4;
-    const t=gNodes.find(n=>n.id===(typeof d.target==='object'?d.target.id:d.target));
-    return t&&t.theme===theme?.9:.05;
-  });
-}
-
-function hlCountry(cid){
-  nd.selectAll('circle:first-child').attr('fill-opacity',d=>{
-    if(d.type==='center') return .9;
-    if(d.type==='country') return d.id===cid?1:.3;
-    return d.country===cid?.95:.08;
-  });
-  lnk.attr('stroke-opacity',d=>{
-    const s=typeof d.source==='object'?d.source.id:d.source;
-    const t=typeof d.target==='object'?d.target.id:d.target;
-    return(s===cid||t===cid)?.95:.05;
-  });
-}
-
-function resetView(){
-  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.fb[data-theme="all"]').classList.add('active');
-  nd.selectAll('circle:first-child').attr('fill-opacity',d=>d.type==='news'?.72:.9);
-  lnk.attr('stroke-opacity',.75);
-  svg.transition().duration(600).call(zoomBeh.transform,d3.zoomIdentity);
-}
-
-function buildSidebar(){
-  let html=document.getElementById('sbh').outerHTML;
-  countries.forEach(c=>{
-    const arts=ARTICLES.filter(a=>a.country===c);
-    const col=COUNTRY_COLORS[c];
-    const ov=COUNTRY_SUMMARIES[c]||'';
-    html+=`<div class="cs" id="sec-${c}">
-      <div class="ch" id="hdr-${c}" onclick="togC('${c}')">
-        <div class="cd" style="background:${col}"></div>
-        <span class="cn" style="color:${col}">${c}</span>
-        <span class="ac">${arts.length} articles</span>
-        <span class="chv">&#9660;</span>
+const COUNTRY_FLAGS = {"India":"\\uD83C\\uDDEE\\uD83C\\uDDF3","Indonesia":"\\uD83C\\uDDEE\\uD83C\\uDDE9","Bangladesh":"\\uD83C\\uDDE7\\uD83C\\uDDE9","Philippines":"\\uD83C\\uDDF5\\uD83C\\uDDED","Thailand":"\\uD83C\\uDDF9\\uD83C\\uDDED","Sri Lanka":"\\uD83C\\uDDF1\\uD83C\\uDDF0","Nepal":"\\uD83C\\uDDF3\\uD83C\\uDDF5","PNG":"\\uD83C\\uDDF5\\uD83C\\uDDEC"};
+const THEME_GRADS = {"Digital ID":"linear-gradient(135deg,#4c1d95,#7c3aed)","DPI":"linear-gradient(135deg,#1e3a5f,#2563eb)","AI":"linear-gradient(135deg,#064e3b,#10b981)","Data Exchange":"linear-gradient(135deg,#78350f,#d97706)","Political Instability":"linear-gradient(135deg,#7f1d1d,#dc2626)","Digital Leaders":"linear-gradient(135deg,#581c87,#9333ea)","Digital":"linear-gradient(135deg,#0c4a6e,#0284c7)"};
+const THEME_ICONS = {"Digital ID":"\\uD83E\\uDEAA","DPI":"\\uD83C\\uDFD7\\uFE0F","AI":"\\uD83E\\uDD16","Data Exchange":"\\uD83D\\uDD04","Political Instability":"\\u26A0\\uFE0F","Digital Leaders":"\\uD83D\\uDC64","Digital":"\\uD83D\\uDCBB"};
+const THEME_CLS = {"Digital ID":"theme-digital-id","DPI":"theme-dpi","AI":"theme-ai","Data Exchange":"theme-data-exchange","Political Instability":"theme-political","Digital Leaders":"theme-digital-leaders","Digital":"theme-digital"};
+const COUNTRY_TABS = [{id:"all",label:"All Countries",flag:"\\uD83C\\uDF0F"}].concat(COUNTRIES.map(c=>({id:c,label:c,flag:COUNTRY_FLAGS[c]||"\\uD83C\\uDF0F"})));
+const SOURCES_LIST = ["Reuters","Associated Press (AP)","BBC","Jakarta Post","Kompas","Bisnis Indonesia","The Daily Star (BD)","Nation Thailand","Kathmandu Post","Rising Nepal Daily","The PNG Sun","GovInsider Asia","Biometric Update","Tech Policy Press","Chatham House","World Bank","UNESCAP","UIDAI","MeitY","Reserve Bank of India","Bank Indonesia","Kominfo","PSA Philippines","DICT Philippines","BSP Philippines","ETDA Thailand","ID Tech Wire","India Policy Hub","Voice & Data","Global Voices"];
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function grad(t){return THEME_GRADS[t]||THEME_GRADS["Digital"]}
+function icon(t){return THEME_ICONS[t]||THEME_ICONS["Digital"]}
+function cls(t){return THEME_CLS[t]||"theme-digital"}
+function flag(c){return COUNTRY_FLAGS[c]||"\\uD83C\\uDF0F"}
+function cardHTML(a,featured){
+  const cl=featured?"card featured":"card";
+  return `<article class="${cl}" onclick="window.open('${esc(a.url)}','_blank')">
+    <div class="thumb"><div class="thumb-bg" style="background:${grad(a.theme)}"><span style="position:relative;z-index:1">${icon(a.theme)}</span></div><span class="thumb-flag">${flag(a.country)}</span></div>
+    <div class="card-body">
+      <div class="card-meta"><span class="badge ${cls(a.theme)}">${esc(a.theme)}</span><span class="card-country">${esc(a.country)}</span>${a.date?`<span class="card-date">${esc(a.date)}</span>`:""}
       </div>
-      <div class="nl" id="nl-${c}">
-        ${ov?`<div style="padding:10px 0 12px;font-size:11px;color:#8b949e;line-height:1.6;border-bottom:1px solid #21262d;margin-bottom:8px">
-          <strong style="color:#c9d1d9;display:block;margin-bottom:4px">&#128240; This Week in ${c}</strong>${ov}
-        </div>`:''}
-        ${arts.map(a=>`<div class="ni">
-          <span class="tb" style="background:${THEME_COLORS[a.theme]}18;color:${THEME_COLORS[a.theme]};border:1px solid ${THEME_COLORS[a.theme]}44">${a.theme}</span>
-          ${a.date?`<span style="font-size:10px;color:#6e7681;margin-left:6px">${a.date}</span>`:''}
-          <div class="nt">${a.title}</div>
-          <div class="ns">${a.summary}</div>
-          <div class="nr">Source: <strong>${a.source}</strong></div>
-          <a href="${a.url}" target="_blank" rel="noopener">&#128279; Open article &rarr;</a>
-        </div>`).join('')}
-      </div>
-    </div>`;
-  });
-  document.getElementById('sb').innerHTML=html;
+      <h2 class="card-headline">${esc(a.title||a.headline||"")}</h2>
+      <p class="card-summary">${esc(a.summary||"")}</p>
+      ${a.source?`<p class="card-source">Source: ${esc(a.source)}</p>`:""}
+      <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Read full story <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6h10M6 1l5 5-5 5"/></svg></a>
+    </div>
+  </article>`;
 }
-
-function togC(c){
-  const nl=document.getElementById('nl-'+c);
-  const hd=document.getElementById('hdr-'+c);
-  const v=nl.classList.toggle('visible');
-  hd.classList.toggle('open',v);
+function buildTabs(){
+  document.getElementById("tabs").innerHTML=COUNTRY_TABS.map(c=>`<button class="tab${c.id==="all"?" active":""}" onclick="filter('${c.id}',this)">${c.flag} ${c.label}</button>`).join("");
 }
-
-function showSbCountry(c){
-  countries.forEach(x=>{
-    const nl=document.getElementById('nl-'+x);
-    const hd=document.getElementById('hdr-'+x);
-    if(nl) nl.classList.remove('visible');
-    if(hd) hd.classList.remove('open');
-  });
-  const nl=document.getElementById('nl-'+c);
-  const hd=document.getElementById('hdr-'+c);
-  if(nl){nl.classList.add('visible');nl.scrollIntoView({behavior:'smooth',block:'nearest'})}
-  if(hd) hd.classList.add('open');
+function buildGrid(country){
+  const main=document.getElementById("main");
+  const pool=country==="all"?ARTICLES:ARTICLES.filter(a=>a.country===country);
+  if(!pool.length){main.innerHTML=`<div class="empty"><h3>No articles found</h3><p>Check back after the next daily update.</p></div>`;return;}
+  let html="";
+  if(country==="all"){
+    COUNTRIES.forEach(c=>{
+      const arts=ARTICLES.filter(a=>a.country===c);
+      if(!arts.length)return;
+      html+=`<div class="country-divider"><span class="flag">${flag(c)}</span><h2>${esc(c)}</h2><div class="line"></div></div><div class="grid">`;
+      arts.forEach((a,i)=>{html+=cardHTML(a,i===0)});
+      html+=`</div>`;
+    });
+  } else {
+    html=`<div class="grid">`;
+    pool.forEach((a,i)=>{html+=cardHTML(a,i===0)});
+    html+=`</div>`;
+  }
+  main.innerHTML=html;
 }
-
-buildSidebar();
-
-window.addEventListener('resize',()=>{
-  W=gc.clientWidth;H=gc.clientHeight;
-  svg.attr('width',W).attr('height',H);
-  sim.force('center',d3.forceCenter(W/2,H/2)).alpha(.2).restart();
-});
+function buildSources(){
+  document.getElementById("sources").innerHTML=`<h3>News Sources</h3><div class="sources-grid">${SOURCES_LIST.map(s=>`<span class="source-tag">${esc(s)}</span>`).join("")}</div><p class="footer-copy">Auto-updated daily via GitHub Actions &middot; Google News RSS &middot; Updated __UPDATE_TIME__</p>`;
+}
+function filter(country,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  buildGrid(country);
+  document.getElementById("main").scrollIntoView({behavior:"smooth",block:"start"});
+}
+buildTabs();buildGrid("all");buildSources();
 </script>
 </body>
 </html>"""
