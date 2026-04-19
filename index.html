@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DPI News Asia Pacific</title>
+<title>DPI Weekly Scan Asia Pacific</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -13,7 +13,6 @@
   --gold-light: #e8c96a;
   --bg: #0a0a0a;
   --card: #0e0e0e;
-  --card-hover: #141414;
   --border: #1c1c1c;
   --border-light: #2a2a2a;
   --text: #e8e8e8;
@@ -23,332 +22,113 @@
   --sans: 'Inter', system-ui, sans-serif;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 15px;
-  line-height: 1.6;
-  min-height: 100vh;
-}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--sans); font-size:15px; line-height:1.6; min-height:100vh; }
 
 /* ── MASTHEAD ── */
-.masthead {
-  background: #000;
-  border-bottom: 1px solid var(--border);
-  padding: 28px 24px 20px;
-  text-align: center;
-  position: relative;
-}
-.masthead-eyebrow {
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 10px;
-}
-.masthead-title {
-  font-family: var(--serif);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-}
-.masthead-title .accent { color: var(--gold); }
-.masthead-meta {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.masthead-meta span {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-}
-.masthead-meta .pipe { color: var(--border-light); }
-.masthead-meta .live-dot {
-  display: inline-block;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #4caf50;
-  margin-right: 5px;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; } 50% { opacity:0.4; }
-}
+.masthead { background:#000; border-bottom:1px solid var(--border); padding:26px 24px 18px; text-align:center; }
+.masthead-eyebrow { font-size:10px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.masthead-title { font-family:var(--serif); font-size:clamp(1.8rem,5vw,3.2rem); font-weight:700; color:#fff; line-height:1.1; letter-spacing:-0.5px; }
+.masthead-title .accent { color:var(--gold); }
+.masthead-meta { margin-top:10px; display:flex; justify-content:center; align-items:center; gap:18px; flex-wrap:wrap; }
+.masthead-meta span { font-size:11px; color:var(--text-muted); letter-spacing:.5px; }
+.masthead-meta .pipe { color:var(--border-light); }
+.live-dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:#4caf50; margin-right:5px; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-/* ── GOLD RIBBON ── */
-.ribbon {
-  background: var(--gold);
-  padding: 7px 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.ribbon-inner {
-  display: inline-block;
-  animation: marquee 30s linear infinite;
-  color: #000;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-@keyframes marquee {
-  from { transform: translateX(100vw); }
-  to   { transform: translateX(-100%); }
-}
+/* ── STICKY NAV (theme pills + tabs) ── */
+.sticky-nav { position:sticky; top:0; z-index:100; background:rgba(10,10,10,.97); backdrop-filter:blur(14px); }
 
-/* ── STICKY TABS ── */
-.tabs-wrap {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(10,10,10,0.96);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tabs-wrap::-webkit-scrollbar { display: none; }
-.tabs {
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 2px;
-  min-width: max-content;
-}
-.tab {
-  padding: 14px 16px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  color: var(--text-muted);
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.tab:hover { color: var(--text); }
-.tab.active {
-  color: var(--gold);
-  border-bottom-color: var(--gold);
-}
+/* theme pill bar */
+.theme-bar { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 20px; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.theme-pill { padding:5px 14px; border-radius:20px; border:1px solid var(--border-light); background:transparent; color:var(--text-muted); font-size:11px; font-weight:600; letter-spacing:.6px; cursor:pointer; transition:all .18s; font-family:var(--sans); white-space:nowrap; }
+.theme-pill:hover { border-color:var(--gold); color:var(--text); }
+.theme-pill.active { background:var(--gold); border-color:var(--gold); color:#000; }
 
-/* ── MAIN LAYOUT ── */
-.main { max-width: 1280px; margin: 0 auto; padding: 32px 20px 60px; }
+/* tab row */
+.tabs-wrap { overflow-x:auto; scrollbar-width:none; border-bottom:1px solid var(--border); }
+.tabs-wrap::-webkit-scrollbar { display:none; }
+.tabs { display:flex; align-items:center; padding:0 16px; gap:2px; min-width:max-content; }
+.tab { padding:12px 16px; font-size:12px; font-weight:500; color:var(--text-muted); cursor:pointer; border:none; background:none; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; font-family:var(--sans); letter-spacing:.2px; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.tab-divider { width:1px; height:20px; background:var(--border); margin:0 6px; align-self:center; flex-shrink:0; }
+.tab-mdb { color:#60a5fa !important; }
+.tab-mdb.active { color:#000 !important; background:linear-gradient(90deg,#1d4ed8,#2563eb); border-bottom-color:#60a5fa; }
+
+/* ── MAIN ── */
+.main { max-width:1280px; margin:0 auto; padding:32px 20px 60px; }
 
 /* ── SECTION DIVIDER ── */
-.country-divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 48px 0 28px;
-}
-.country-divider:first-child { margin-top: 0; }
-.country-divider h2 {
-  font-family: var(--serif);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-}
-.country-divider .flag { font-size: 1.4rem; }
-.country-divider .line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, var(--border-light), transparent);
-}
+.section-divider { display:flex; align-items:center; gap:16px; margin:48px 0 28px; }
+.section-divider:first-child { margin-top:0; }
+.section-divider h2 { font-family:var(--serif); font-size:1.4rem; font-weight:600; color:#fff; white-space:nowrap; }
+.section-divider .flag { font-size:1.3rem; }
+.section-divider .line { flex:1; height:1px; background:linear-gradient(to right,var(--border-light),transparent); }
+.section-divider.mdb-divider h2 { color:#60a5fa; }
 
 /* ── GRID ── */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-@media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px)  { .grid { grid-template-columns: 1fr; } }
+.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+@media(max-width:1024px) { .grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px)  { .grid { grid-template-columns:1fr; } }
 
 /* ── CARD ── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.2s, transform 0.2s;
-  cursor: pointer;
-}
-.card:hover {
-  border-color: var(--border-light);
-  transform: translateY(-2px);
-}
-.card.featured {
-  grid-column: span 2;
-  flex-direction: row;
-}
-@media (max-width: 600px) { .card.featured { grid-column: span 1; flex-direction: column; } }
+.card { background:var(--card); border:1px solid var(--border); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; transition:border-color .2s,transform .2s; cursor:pointer; }
+.card:hover { border-color:var(--border-light); transform:translateY(-2px); }
+.card.featured { grid-column:span 2; flex-direction:row; }
+@media(max-width:600px) { .card.featured { grid-column:span 1; flex-direction:column; } }
 
 /* thumbnail */
-.thumb {
-  position: relative;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.card:not(.featured) .thumb { height: 160px; }
-.card.featured .thumb { width: 260px; min-height: 220px; }
-@media (max-width: 1024px) { .card.featured .thumb { width: 200px; } }
-@media (max-width: 600px) { .card.featured .thumb { width: 100%; height: 180px; } }
-
-.thumb-bg {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2.8rem;
-  position: relative;
-}
-.thumb-bg::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
-}
-.thumb-flag {
-  position: absolute;
-  bottom: 8px; right: 10px;
-  font-size: 1.1rem;
-  z-index: 1;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8));
-}
+.thumb { position:relative; overflow:hidden; flex-shrink:0; }
+.card:not(.featured) .thumb { height:160px; }
+.card.featured .thumb { width:260px; min-height:220px; }
+@media(max-width:1024px) { .card.featured .thumb { width:200px; } }
+@media(max-width:600px)  { .card.featured .thumb { width:100%; height:180px; } }
+.thumb-bg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2.8rem; position:relative; }
+.thumb-bg::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,0,0,.3),rgba(0,0,0,.6)); }
+.thumb-flag { position:absolute; bottom:8px; right:10px; font-size:1.05rem; z-index:1; filter:drop-shadow(0 1px 3px rgba(0,0,0,.8)); }
+.thumb-badge { position:absolute; bottom:8px; right:10px; z-index:1; font-size:9px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; background:rgba(0,0,0,.75); color:#60a5fa; border:1px solid #2563eb; border-radius:3px; padding:2px 6px; }
 
 /* card body */
-.card-body {
-  padding: 18px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.badge {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 3px;
-  border: 1px solid currentColor;
-}
-.card-country {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-.card-date {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: auto;
-}
-.card-headline {
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.4;
-}
-.card.featured .card-headline { font-size: 1.25rem; }
-.card-summary {
-  font-size: 13px;
-  color: var(--text-dim);
-  line-height: 1.65;
-  flex: 1;
-}
-.card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.3px;
-  transition: color 0.2s;
-  margin-top: 4px;
-}
-.card-link:hover { color: var(--gold-light); }
-.card-link svg { width: 12px; height: 12px; }
+.card-body { padding:18px 20px 20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+.card-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.badge { font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; padding:3px 8px; border-radius:3px; border:1px solid currentColor; }
+.card-org { font-size:11px; color:var(--text-muted); font-weight:500; }
+.card-date { font-size:11px; color:var(--text-muted); margin-left:auto; }
+.card-headline { font-family:var(--serif); font-size:1.05rem; font-weight:600; color:#fff; line-height:1.4; }
+.card.featured .card-headline { font-size:1.2rem; }
+.card-summary { font-size:13px; color:var(--text-dim); line-height:1.65; flex:1; }
+.card-source { font-size:11px; color:var(--text-muted); }
+.card-link { display:inline-flex; align-items:center; gap:5px; color:var(--gold); font-size:12px; font-weight:600; text-decoration:none; transition:color .2s; margin-top:4px; }
+.card-link:hover { color:var(--gold-light); }
+.card-link svg { width:12px; height:12px; }
+
+/* ── MDB intro box ── */
+.mdb-intro { border:1px solid #1d4ed8; border-radius:8px; padding:18px 22px; background:#0a1628; margin-bottom:28px; }
+.mdb-intro h3 { font-family:var(--serif); font-size:1.05rem; color:#60a5fa; margin-bottom:6px; }
+.mdb-intro p { font-size:12px; color:var(--text-dim); line-height:1.6; }
 
 /* ── SOURCES FOOTER ── */
-.sources-section {
-  border-top: 1px solid var(--border);
-  margin-top: 64px;
-  padding-top: 40px;
-  padding-bottom: 40px;
-}
-.sources-section h3 {
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--gold);
-  margin-bottom: 20px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-.sources-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-.source-tag {
-  font-size: 11px;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 5px 12px;
-  transition: border-color 0.2s, color 0.2s;
-}
-.source-tag:hover {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-.footer-copy {
-  text-align: center;
-  margin-top: 28px;
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: 0.3px;
-}
+.sources-section { border-top:1px solid var(--border); margin-top:64px; padding-top:40px; padding-bottom:40px; }
+.sources-section h3 { font-family:var(--serif); font-size:1.1rem; font-weight:600; color:var(--gold); margin-bottom:20px; text-align:center; }
+.sources-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:960px; margin:0 auto; }
+.source-tag { font-size:11px; color:var(--text-muted); border:1px solid var(--border); border-radius:4px; padding:5px 12px; transition:border-color .2s,color .2s; }
+.source-tag:hover { border-color:var(--gold); color:var(--gold); }
+.source-tag.mdb { border-color:#1d4ed8; color:#60a5fa; }
+.footer-copy { text-align:center; margin-top:28px; font-size:11px; color:var(--text-muted); }
 
 /* ── EMPTY STATE ── */
-.empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-.empty h3 { font-family: var(--serif); font-size: 1.3rem; margin-bottom: 8px; color: var(--text-dim); }
+.empty { text-align:center; padding:60px 20px; color:var(--text-muted); }
+.empty h3 { font-family:var(--serif); font-size:1.3rem; margin-bottom:8px; color:var(--text-dim); }
 
 /* ── THEME COLOURS ── */
-.theme-digital-id    { color: #a78bfa; border-color: #a78bfa; }
-.theme-dpi           { color: #60a5fa; border-color: #60a5fa; }
-.theme-ai            { color: #34d399; border-color: #34d399; }
-.theme-data-exchange { color: #fbbf24; border-color: #fbbf24; }
-.theme-political     { color: #f87171; border-color: #f87171; }
-.theme-digital-leaders { color: #c084fc; border-color: #c084fc; }
-.theme-digital       { color: #38bdf8; border-color: #38bdf8; }
+.theme-digital-id    { color:#a78bfa; border-color:#a78bfa; }
+.theme-dpi           { color:#60a5fa; border-color:#60a5fa; }
+.theme-ai            { color:#34d399; border-color:#34d399; }
+.theme-data-exchange { color:#fbbf24; border-color:#fbbf24; }
+.theme-political     { color:#f87171; border-color:#f87171; }
+.theme-digital-leaders { color:#c084fc; border-color:#c084fc; }
+.theme-digital       { color:#38bdf8; border-color:#38bdf8; }
 </style>
 </head>
 <body>
@@ -356,29 +136,36 @@ body {
 <!-- MASTHEAD -->
 <header class="masthead">
   <div class="masthead-eyebrow">Digital Public Infrastructure · Weekly Intelligence</div>
-  <h1 class="masthead-title">DPI News <span class="accent">Asia Pacific</span></h1>
+  <h1 class="masthead-title">DPI Weekly Scan <span class="accent">Asia Pacific</span></h1>
   <div class="masthead-meta">
     <span id="weekLabel">Week of Apr 13 – Apr 19, 2026</span>
     <span class="pipe">|</span>
     <span><span class="live-dot"></span>Auto-updated daily</span>
     <span class="pipe">|</span>
-    <span id="articleCount">Loading articles…</span>
+    <span id="articleCount">Loading…</span>
   </div>
 </header>
 
-<!-- GOLD RIBBON -->
-<div class="ribbon">
-  <span class="ribbon-inner">
-    Digital Identity &nbsp;·&nbsp; DPI &nbsp;·&nbsp; Artificial Intelligence &nbsp;·&nbsp; Data Exchange &nbsp;·&nbsp; Political Instability &nbsp;·&nbsp; Digital Leaders &nbsp;·&nbsp; Digital Identity &nbsp;·&nbsp; DPI &nbsp;·&nbsp; Artificial Intelligence &nbsp;·&nbsp; Data Exchange &nbsp;·&nbsp; Political Instability &nbsp;·&nbsp; Digital Leaders &nbsp;·&nbsp;
-  </span>
+<!-- STICKY NAV -->
+<div class="sticky-nav">
+
+  <!-- THEME FILTER PILLS -->
+  <div class="theme-bar" id="themeBar">
+    <button class="theme-pill active" data-theme="all"          onclick="setTheme('all',this)">All Themes</button>
+    <button class="theme-pill"        data-theme="Digital ID"   onclick="setTheme('Digital ID',this)">🪪 Digital ID</button>
+    <button class="theme-pill"        data-theme="DPI"          onclick="setTheme('DPI',this)">🏗️ DPI</button>
+    <button class="theme-pill"        data-theme="Data Exchange" onclick="setTheme('Data Exchange',this)">🔄 Data (sharing) Exchange</button>
+    <button class="theme-pill"        data-theme="AI"           onclick="setTheme('AI',this)">🤖 AI</button>
+    <button class="theme-pill"        data-theme="Political Instability" onclick="setTheme('Political Instability',this)">⚠️ Politics</button>
+  </div>
+
+  <!-- COUNTRY + MDB TABS -->
+  <nav class="tabs-wrap">
+    <div class="tabs" id="tabs"></div>
+  </nav>
 </div>
 
-<!-- TABS -->
-<nav class="tabs-wrap">
-  <div class="tabs" id="tabs"></div>
-</nav>
-
-<!-- MAIN -->
+<!-- MAIN CONTENT -->
 <main class="main" id="main"></main>
 
 <!-- SOURCES -->
@@ -386,31 +173,43 @@ body {
 
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
-const WEEK_LABEL   = "Week of Apr 13 – Apr 19, 2026";
-const UPDATE_TIME  = "Apr 19, 2026 06:00 UTC";
-const ARTICLE_COUNT = 39;
+const WEEK_LABEL    = "Week of Apr 13 – Apr 19, 2026";
+const UPDATE_TIME   = "Apr 19, 2026 06:00 UTC";
+const ARTICLE_COUNT = 49;
 
-const COUNTRIES = [
-  { id:"all",          label:"All Countries", flag:"🌏" },
-  { id:"India",        label:"India",         flag:"🇮🇳" },
-  { id:"Indonesia",    label:"Indonesia",     flag:"🇮🇩" },
-  { id:"Bangladesh",   label:"Bangladesh",    flag:"🇧🇩" },
-  { id:"Philippines",  label:"Philippines",   flag:"🇵🇭" },
-  { id:"Thailand",     label:"Thailand",      flag:"🇹🇭" },
-  { id:"Sri Lanka",    label:"Sri Lanka",     flag:"🇱🇰" },
-  { id:"Nepal",        label:"Nepal",         flag:"🇳🇵" },
-  { id:"PNG",          label:"PNG",           flag:"🇵🇬" },
+// Country tabs
+const COUNTRY_TABS = [
+  { id:"all",         label:"All Countries", flag:"🌏", mdb:false },
+  { id:"India",       label:"India",         flag:"🇮🇳", mdb:false },
+  { id:"Indonesia",   label:"Indonesia",     flag:"🇮🇩", mdb:false },
+  { id:"Bangladesh",  label:"Bangladesh",    flag:"🇧🇩", mdb:false },
+  { id:"Philippines", label:"Philippines",   flag:"🇵🇭", mdb:false },
+  { id:"Thailand",    label:"Thailand",      flag:"🇹🇭", mdb:false },
+  { id:"Sri Lanka",   label:"Sri Lanka",     flag:"🇱🇰", mdb:false },
+  { id:"Nepal",       label:"Nepal",         flag:"🇳🇵", mdb:false },
+  { id:"PNG",         label:"PNG",           flag:"🇵🇬", mdb:false },
+  { id:"MDBs",        label:"MDBs",          flag:"🏦",  mdb:true  },
 ];
 
-// Theme → gradient + icon
+// Country order for "all" view
+const COUNTRY_ORDER = ["India","Indonesia","Bangladesh","Philippines","Thailand","Sri Lanka","Nepal","PNG"];
+
+// Theme config
 const THEMES = {
-  "Digital ID":      { grad:"linear-gradient(135deg,#4c1d95,#7c3aed)", icon:"🪪" },
-  "DPI":             { grad:"linear-gradient(135deg,#1e3a5f,#2563eb)", icon:"🏗️" },
-  "AI":              { grad:"linear-gradient(135deg,#064e3b,#10b981)", icon:"🤖" },
-  "Data Exchange":   { grad:"linear-gradient(135deg,#78350f,#d97706)", icon:"🔄" },
-  "Political Instability":{ grad:"linear-gradient(135deg,#7f1d1d,#dc2626)", icon:"⚠️" },
-  "Digital Leaders": { grad:"linear-gradient(135deg,#581c87,#9333ea)", icon:"👤" },
-  "Digital":         { grad:"linear-gradient(135deg,#0c4a6e,#0284c7)", icon:"💻" },
+  "Digital ID":             { grad:"linear-gradient(135deg,#4c1d95,#7c3aed)", icon:"🪪" },
+  "DPI":                    { grad:"linear-gradient(135deg,#1e3a5f,#2563eb)", icon:"🏗️" },
+  "AI":                     { grad:"linear-gradient(135deg,#064e3b,#10b981)", icon:"🤖" },
+  "Data Exchange":          { grad:"linear-gradient(135deg,#78350f,#d97706)", icon:"🔄" },
+  "Political Instability":  { grad:"linear-gradient(135deg,#7f1d1d,#dc2626)", icon:"⚠️" },
+  "Digital Leaders":        { grad:"linear-gradient(135deg,#581c87,#9333ea)", icon:"👤" },
+  "Digital":                { grad:"linear-gradient(135deg,#0c4a6e,#0284c7)", icon:"💻" },
+};
+const MDB_GRAD = "linear-gradient(135deg,#0f2a5e,#1d4ed8)";
+
+const THEME_CLASS = {
+  "Digital ID":"theme-digital-id", "DPI":"theme-dpi", "AI":"theme-ai",
+  "Data Exchange":"theme-data-exchange", "Political Instability":"theme-political",
+  "Digital Leaders":"theme-digital-leaders", "Digital":"theme-digital",
 };
 
 const COUNTRY_FLAGS = {
@@ -418,371 +217,445 @@ const COUNTRY_FLAGS = {
   "Thailand":"🇹🇭","Sri Lanka":"🇱🇰","Nepal":"🇳🇵","PNG":"🇵🇬"
 };
 
-const THEME_CLASS = {
-  "Digital ID":"theme-digital-id",
-  "DPI":"theme-dpi",
-  "AI":"theme-ai",
-  "Data Exchange":"theme-data-exchange",
-  "Political Instability":"theme-political",
-  "Digital Leaders":"theme-digital-leaders",
-  "Digital":"theme-digital",
-};
-
-// ── ARTICLES ─────────────────────────────────────────────────────────────────
-const ARTICLES = [
-  // INDIA
+// ── COUNTRY ARTICLES ──────────────────────────────────────────────────────────
+const COUNTRY_ARTICLES = [
+  // ── INDIA ──
   { country:"India", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Aadhaar Crosses 1.4 Billion Enrolments as UIDAI Rolls Out Face Authentication",
-    summary:"India's Unique Identification Authority (UIDAI) announced Aadhaar enrolments have surpassed 1.4 billion, covering virtually the entire population. The authority has expanded face-based authentication to replace fingerprint and iris scans in areas with poor biometric capture rates, particularly benefiting elderly and manual-labour populations. State governments are integrating the updated authentication API into welfare distribution systems. UIDAI also confirmed a new sandbox environment for fintech startups to test Aadhaar-linked KYC workflows without touching production data, accelerating innovation while maintaining privacy compliance.",
+    summary:"India's Unique Identification Authority (UIDAI) announced Aadhaar enrolments have surpassed 1.4 billion, covering virtually the entire population. The authority expanded face-based authentication to replace fingerprint and iris scans in areas with poor biometric capture rates, particularly benefiting elderly and manual-labour populations. State governments are integrating the updated authentication API into welfare distribution systems. UIDAI also confirmed a new sandbox environment for fintech startups to test Aadhaar-linked KYC workflows without touching production data.",
     url:"https://uidai.gov.in" },
 
   { country:"India", theme:"DPI", date:"Apr 18, 2026",
     headline:"India's Account Aggregator Network Hits 50 Million Consented Data Flows",
-    summary:"The Reserve Bank of India's Account Aggregator framework, a landmark Data Empowerment and Protection Architecture (DEPA) implementation, has facilitated over 50 million consented financial data flows since launch. Participating banks now include all major public and private sector institutions. Loan approval times for MSME borrowers using aggregator-sourced cash-flow data have dropped from 14 days to under 48 hours. The framework is being studied by the G20 Digital Economy Working Group as a replicable model for consent-based financial data sharing across emerging economies.",
+    summary:"The Reserve Bank of India's Account Aggregator framework, a landmark Data Empowerment and Protection Architecture (DEPA) implementation, facilitated over 50 million consented financial data flows since launch. Loan approval times for MSME borrowers using aggregator-sourced cash-flow data dropped from 14 days to under 48 hours. The framework is being studied by the G20 Digital Economy Working Group as a replicable model for consent-based financial data sharing across emerging economies.",
     url:"https://sahamati.org.in" },
 
   { country:"India", theme:"AI", date:"Apr 17, 2026",
     headline:"MeitY Releases Draft AI Governance Framework for Public Consultation",
-    summary:"India's Ministry of Electronics and Information Technology (MeitY) published a draft AI governance framework seeking public comment. The document proposes a risk-tiered approach: low-risk AI systems face only disclosure requirements, while high-risk systems in health, credit, and law enforcement must obtain certification from an accredited conformity-assessment body. The framework explicitly excludes national-security AI from civilian oversight. Industry groups broadly welcome the light-touch approach, though civil society organisations argue biometric surveillance tools should sit in the highest risk tier regardless of deploying agency.",
+    summary:"India's Ministry of Electronics and Information Technology published a draft AI governance framework seeking public comment. The document proposes a risk-tiered approach: low-risk AI systems face only disclosure requirements, while high-risk systems in health, credit, and law enforcement must obtain certification from an accredited conformity-assessment body. Industry groups broadly welcome the light-touch approach, though civil society organisations argue biometric surveillance tools should sit in the highest risk tier regardless of deploying agency.",
     url:"https://meity.gov.in" },
 
   { country:"India", theme:"Data Exchange", date:"Apr 16, 2026",
     headline:"ONDC Onboards 1,200 New Sellers in Rural Districts Under Expansion Drive",
-    summary:"The Open Network for Digital Commerce (ONDC) reported onboarding 1,200 new sellers from Tier-3 and Tier-4 districts in Q1 2026, fulfilling a government mandate to democratise e-commerce access. Average order values from rural sellers have grown 38% year-on-year. The network processed 8 million transactions in March alone. Logistics partners are using ONDC's open ride and delivery protocols to serve pin codes previously ignored by incumbent platforms, reducing delivery costs by an estimated 22% through decentralised fulfilment.",
+    summary:"The Open Network for Digital Commerce reported onboarding 1,200 new sellers from Tier-3 and Tier-4 districts in Q1 2026. The network processed 8 million transactions in March alone. Logistics partners are using ONDC's open ride and delivery protocols to serve pin codes previously ignored by incumbent platforms, reducing delivery costs by an estimated 22% through decentralised fulfilment.",
     url:"https://ondc.org" },
 
   { country:"India", theme:"Political Instability", date:"Apr 15, 2026",
     headline:"Opposition Demands Parliamentary Probe Into Surveillance Use of Aadhaar Data",
-    summary:"Opposition members tabled a motion in the Lok Sabha demanding a joint parliamentary committee investigation into alleged misuse of Aadhaar-linked data by state law-enforcement agencies. A report by a digital-rights coalition cited 47 documented cases where biometric data requests exceeded statutory grounds. The government rejected the motion, asserting existing judicial oversight is adequate. Privacy advocates note India still lacks a fully operational Data Protection Board under the 2023 Digital Personal Data Protection Act, leaving formal redress mechanisms incomplete.",
+    summary:"Opposition members tabled a motion in the Lok Sabha demanding a joint parliamentary committee investigation into alleged misuse of Aadhaar-linked data by state law-enforcement agencies. A digital-rights coalition cited 47 documented cases where biometric data requests exceeded statutory grounds. Privacy advocates note India still lacks a fully operational Data Protection Board under the 2023 Digital Personal Data Protection Act, leaving formal redress mechanisms incomplete.",
     url:"https://loksabha.nic.in" },
 
-  // INDONESIA
+  // ── INDONESIA ──
   { country:"Indonesia", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Indonesia's Digital ID Card (KTP-el) to Gain NFC Chip for Instant Verification",
-    summary:"Indonesia's Ministry of Home Affairs announced an upgrade to the electronic National ID card (KTP-el), adding an NFC chip that allows instant tap-to-verify at government counters and compatible smartphones. The upgrade targets 50 million cards in the first phase, covering Java and Bali. The chip stores a signed digital certificate linked to the Dukcapil civil-registry database, enabling offline verification in low-connectivity areas. Banks and telcos will be permitted to read chip data for KYC after signing data-use agreements with the ministry.",
+    summary:"Indonesia's Ministry of Home Affairs announced an upgrade to the electronic National ID card, adding an NFC chip that allows instant tap-to-verify at government counters and smartphones. The upgrade targets 50 million cards covering Java and Bali. The chip stores a signed digital certificate linked to the Dukcapil civil-registry database, enabling offline verification in low-connectivity areas. Banks and telcos will be permitted to read chip data for KYC after signing data-use agreements with the ministry.",
     url:"https://dukcapil.kemendagri.go.id" },
 
   { country:"Indonesia", theme:"DPI", date:"Apr 18, 2026",
     headline:"GovTech Indonesia Launches INA Digital 2.0 Super-App for Citizen Services",
-    summary:"GovTech Edu and Kominfo jointly launched INA Digital 2.0, consolidating over 200 government services into a single app authenticated via the national digital ID. Services include tax filing, business licensing, health-insurance claims, and village-fund monitoring. The app recorded 3 million downloads in its first week. Interoperability is powered by the SPBE (Electronic-based Government System) integration bus, which was upgraded to handle 100,000 concurrent API calls. The World Bank cited INA Digital as a model for whole-of-government service integration in its latest GovTech Maturity Index.",
+    summary:"GovTech Edu and Kominfo jointly launched INA Digital 2.0, consolidating over 200 government services into a single app authenticated via the national digital ID. Services include tax filing, business licensing, health-insurance claims, and village-fund monitoring. The app recorded 3 million downloads in its first week. Interoperability is powered by the SPBE integration bus, upgraded to handle 100,000 concurrent API calls.",
     url:"https://indonesia.go.id" },
 
   { country:"Indonesia", theme:"AI", date:"Apr 17, 2026",
-    headline:"Kominfo's AI Roadmap Prioritises Bahasa Indonesia Large Language Models",
-    summary:"Indonesia's Ministry of Communications and Informatics released a 2026–2030 AI roadmap prioritising sovereign large language model development in Bahasa Indonesia and regional languages such as Javanese and Sundanese. The government will co-fund a national compute cluster of 10,000 GPUs hosted at BRIN data centres. The roadmap mandates that public-sector chatbots and document-processing tools must use the locally hosted model by 2028. International partnerships with Singapore and Japan on AI safety research are included in the plan.",
+    headline:"Kominfo AI Roadmap Prioritises Bahasa Indonesia Large Language Models",
+    summary:"Indonesia's Ministry of Communications released a 2026–2030 AI roadmap prioritising sovereign large language model development in Bahasa Indonesia and regional languages. The government will co-fund a national compute cluster of 10,000 GPUs at BRIN data centres. The roadmap mandates public-sector chatbots must use the locally hosted model by 2028. International partnerships with Singapore and Japan on AI safety research are included.",
     url:"https://kominfo.go.id" },
 
   { country:"Indonesia", theme:"Data Exchange", date:"Apr 16, 2026",
-    headline:"Jakarta Post: BI-FAST Payment Rails See 800 Million Transactions in Q1 2026",
-    summary:"Bank Indonesia's real-time retail payment system BI-FAST processed 800 million transactions in the first quarter of 2026, a 65% year-on-year increase. Average transaction fees have fallen to IDR 2,500 (USD 0.15), undercutting legacy interbank transfer costs by 80%. The central bank announced BI-FAST will be extended to cross-border remittances with Malaysia and the Philippines under the ASEAN Payment Connectivity initiative by Q3 2026. Rural adoption is accelerating through BRI agent-banking networks offering BI-FAST-enabled cash-in/cash-out.",
+    headline:"BI-FAST Payment Rails See 800 Million Transactions in Q1 2026",
+    summary:"Bank Indonesia's real-time retail payment system BI-FAST processed 800 million transactions in Q1 2026, a 65% year-on-year increase. Average transaction fees fell to IDR 2,500 (USD 0.15), undercutting legacy interbank costs by 80%. The central bank announced BI-FAST will extend to cross-border remittances with Malaysia and the Philippines under the ASEAN Payment Connectivity initiative by Q3 2026.",
     url:"https://www.thejakartapost.com" },
 
-  { country:"Indonesia", theme:"Digital Leaders", date:"Apr 15, 2026",
+  { country:"Indonesia", theme:"Political Instability", date:"Apr 15, 2026",
     headline:"President Prabowo Appoints New BSSN Chief to Accelerate Cyber Resilience",
-    summary:"President Prabowo Subianto appointed Lt. Gen. (ret.) Hendra Kusuma as the new head of BSSN, the National Cyber and Crypto Agency, with a mandate to deliver a national cybersecurity framework within 90 days. Kusuma previously led the Army's signals corps and oversaw the BSSN audit of critical-information infrastructure. His first public statement stressed zero-trust architecture for government networks and mandatory incident reporting within 72 hours for state-owned enterprises. Observers note the appointment signals a more assertive posture toward foreign cyber intrusions, which increased 40% last year.",
+    summary:"President Prabowo Subianto appointed Lt. Gen. (ret.) Hendra Kusuma as the new head of BSSN, the National Cyber and Crypto Agency, with a mandate to deliver a national cybersecurity framework within 90 days. His first public statement stressed zero-trust architecture for government networks and mandatory incident reporting within 72 hours for state-owned enterprises. Foreign cyber intrusions increased 40% last year.",
     url:"https://bssn.go.id" },
 
-  // BANGLADESH
+  // ── BANGLADESH ──
   { country:"Bangladesh", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Bangladesh NID Wing to Issue Smart Cards With Digital Signature Capability",
-    summary:"The National Identity Wing of the Bangladesh Election Commission announced a new generation of smart NID cards embedding a PKI-based digital signature chip. The cards will allow citizens to sign government documents electronically without visiting offices. Pilot rollout begins in Dhaka and Chittagong divisions. The initiative aligns with the 'Smart Bangladesh 2041' vision and is supported by UNDP's Digital Governance Programme. Integration with the land-registry system is the first priority, aiming to cut property-transfer fraud, a long-standing problem costing the economy an estimated BDT 2,000 crore annually.",
+    summary:"The National Identity Wing of the Bangladesh Election Commission announced new smart NID cards embedding a PKI-based digital signature chip. The cards allow citizens to sign government documents electronically without visiting offices. Pilot rollout begins in Dhaka and Chittagong divisions. Integration with the land-registry system is the first priority, aiming to cut property-transfer fraud costing the economy an estimated BDT 2,000 crore annually.",
     url:"https://nidw.gov.bd" },
 
   { country:"Bangladesh", theme:"DPI", date:"Apr 18, 2026",
-    headline:"Daily Star: Interoperable Health Data Exchange Piloted Across 50 Upazila Clinics",
-    summary:"Bangladesh's Directorate General of Health Services launched a pilot interoperable health-data exchange connecting 50 upazila health complexes using the OpenHIE architecture. Patient records are linked via national ID, enabling district hospitals to access referral histories within seconds. The pilot is funded by the Bill & Melinda Gates Foundation and the Global Fund. Early data shows a 30% reduction in duplicate diagnostic tests. If successful, the system will scale to all 487 upazilas by 2027, creating the country's first longitudinal electronic health record for rural populations.",
+    headline:"Interoperable Health Data Exchange Piloted Across 50 Upazila Clinics",
+    summary:"Bangladesh's Directorate General of Health Services launched a pilot interoperable health-data exchange connecting 50 upazila health complexes using the OpenHIE architecture. Patient records are linked via national ID, enabling district hospitals to access referral histories within seconds. The pilot, funded by the Bill & Melinda Gates Foundation and the Global Fund, shows a 30% reduction in duplicate diagnostic tests. The system will scale to all 487 upazilas by 2027.",
     url:"https://www.thedailystar.net" },
 
   { country:"Bangladesh", theme:"AI", date:"Apr 17, 2026",
     headline:"Bangladesh AI Strategy Focuses on Agriculture and Garment-Sector Productivity",
-    summary:"The ICT Division of Bangladesh released the National AI Strategy 2026–2031, prioritising AI applications in agriculture yield prediction and garment supply-chain optimisation — the two sectors representing 75% of GDP and export earnings. The government is partnering with local universities to train 10,000 AI practitioners over five years. A National AI Council chaired by the ICT Minister will oversee policy and ethics. The strategy notably omits facial-recognition regulation, drawing criticism from digital-rights groups who warn of surveillance risks in a context where political tensions remain high.",
+    summary:"Bangladesh's ICT Division released the National AI Strategy 2026–2031, prioritising AI applications in agriculture yield prediction and garment supply-chain optimisation — the two sectors representing 75% of GDP and export earnings. The government is partnering with local universities to train 10,000 AI practitioners over five years. The strategy omits facial-recognition regulation, drawing criticism from digital-rights groups who warn of surveillance risks.",
     url:"https://ictd.gov.bd" },
 
   { country:"Bangladesh", theme:"Political Instability", date:"Apr 16, 2026",
     headline:"Interim Government Blocks Social Media Platforms Amid Anti-Quota Protests",
-    summary:"Bangladesh's interim administration imposed a temporary block on Facebook, TikTok, and YouTube following a resurgence of anti-quota protests in Dhaka and Rajshahi. The Bangladesh Telecommunication Regulatory Commission (BTRC) issued the order under Section 97 of the Telecommunications Act, which grants emergency internet-restriction powers. Human-rights groups condemned the move as disproportionate. Broadband and mobile-data speeds dropped 60% nationwide during the restriction window. The block was partially lifted after 48 hours under judicial intervention, with the High Court directing BTRC to provide legal justification within 72 hours.",
+    summary:"Bangladesh's interim administration imposed a temporary block on Facebook, TikTok, and YouTube following a resurgence of anti-quota protests in Dhaka and Rajshahi. The BTRC issued the order under Section 97 of the Telecommunications Act. Human-rights groups condemned the move as disproportionate. Broadband and mobile-data speeds dropped 60% nationwide. The block was partially lifted after 48 hours under judicial intervention.",
     url:"https://www.thedailystar.net" },
 
   { country:"Bangladesh", theme:"Digital Leaders", date:"Apr 15, 2026",
     headline:"ICT Secretary Announces BDT 500 Crore Digital Infrastructure Fund for Districts",
-    summary:"Bangladesh ICT Division Secretary Md. Shamsul Arefin unveiled a BDT 500 crore fund to extend fibre-optic connectivity and digital-service centres to all 64 districts by December 2026. The fund, sourced from the Digital Bangladesh Trust, will prioritise 15 under-served districts in the Rangpur and Mymensingh divisions. Each district will receive a Digital Innovation Hub co-located with the DC office. Arefin stressed the hubs would focus on last-mile government service delivery and women's digital-skills training, with a target of 200,000 new female beneficiaries.",
+    summary:"Bangladesh ICT Division Secretary Md. Shamsul Arefin unveiled a BDT 500 crore fund to extend fibre-optic connectivity and digital-service centres to all 64 districts by December 2026. Each district will receive a Digital Innovation Hub co-located with the DC office. The initiative will prioritise 15 under-served districts in Rangpur and Mymensingh divisions, targeting 200,000 new female beneficiaries through digital-skills training.",
     url:"https://ictd.gov.bd" },
 
-  // PHILIPPINES
+  // ── PHILIPPINES ──
   { country:"Philippines", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"PSA Reaches 80 Million PhilSys Registrations, Activates ePhilID Mobile Wallet",
-    summary:"The Philippine Statistics Authority announced PhilSys national ID registrations have reached 80 million, covering approximately 73% of the adult population. The authority simultaneously activated ePhilID integration with GCash and Maya digital wallets, allowing users to present a PSA-certified digital identity for financial onboarding without a physical card. The move is expected to bring 12 million previously unbanked Filipinos into the formal financial system. PhilSys biometric data is stored in a locally hosted secure vault after controversy over earlier cloud-hosting proposals.",
+    summary:"The Philippine Statistics Authority announced PhilSys national ID registrations reached 80 million, covering approximately 73% of the adult population. The authority activated ePhilID integration with GCash and Maya digital wallets, allowing users to present a PSA-certified digital identity for financial onboarding without a physical card. The move is expected to bring 12 million previously unbanked Filipinos into the formal financial system.",
     url:"https://psa.gov.ph" },
 
   { country:"Philippines", theme:"DPI", date:"Apr 18, 2026",
     headline:"eGovPH App Now Handles Business Permits, Birth Certificates, and Tax Clearances",
-    summary:"The Department of Information and Communications Technology (DICT) expanded the eGovPH super-app to include business-permit renewal, birth-certificate requests, and BIR tax-clearance certificates. The app now serves 4.2 million registered users and processed 900,000 transactions in March. Local government units in Metro Manila and Cebu completed API integration within six months of the mandate. DICT Secretary Ivan Uy said the next phase will integrate barangay-level services, targeting completion by end-2026. The app uses PhilSys for identity verification and GCash/Maya for fee payment.",
+    summary:"The Department of Information and Communications Technology expanded the eGovPH super-app to include business-permit renewal, birth-certificate requests, and BIR tax-clearance certificates. The app now serves 4.2 million registered users and processed 900,000 transactions in March. DICT Secretary Ivan Uy said the next phase will integrate barangay-level services by end-2026.",
     url:"https://dict.gov.ph" },
 
   { country:"Philippines", theme:"AI", date:"Apr 17, 2026",
-    headline:"DICT Pilots AI-Powered Typhoon Response Coordination System Across NDRRMC",
-    summary:"The Philippines' DICT, in partnership with NDRRMC, piloted an AI-based disaster-response coordination system ahead of the 2026 typhoon season. The system ingests satellite imagery, weather-model outputs, and barangay population data to auto-generate evacuation recommendations and resource-deployment plans. During a simulation exercise in Eastern Visayas, AI-generated plans matched expert assessments with 92% accuracy in 8 minutes, versus 4 hours for manual planning. The system will be operational for all Category 3+ typhoons from June 2026.",
+    headline:"DICT Pilots AI-Powered Typhoon Response Coordination System",
+    summary:"The Philippines' DICT, in partnership with NDRRMC, piloted an AI-based disaster-response coordination system ahead of the 2026 typhoon season. During a simulation in Eastern Visayas, AI-generated plans matched expert assessments with 92% accuracy in 8 minutes, versus 4 hours for manual planning. The system will be operational for all Category 3+ typhoons from June 2026.",
     url:"https://dict.gov.ph" },
 
   { country:"Philippines", theme:"Data Exchange", date:"Apr 16, 2026",
     headline:"BSP's InstaPay Processes PHP 1 Trillion in Transfers for First Time",
-    summary:"The Bangko Sentral ng Pilipinas reported InstaPay, the country's real-time low-value payment system, crossed PHP 1 trillion (USD 17 billion) in monthly transfer volume for the first time in March 2026. Person-to-person transfers via GCash and Maya dominate volume, but merchant payments are the fastest-growing segment, up 88% year-on-year. BSP is linking InstaPay to Thailand's PromptPay and Indonesia's BI-FAST under the ASEAN Payment Connectivity initiative. Cross-border QR payments between the Philippines and Singapore will launch in Q3 2026.",
+    summary:"The Bangko Sentral ng Pilipinas reported InstaPay crossed PHP 1 trillion (USD 17 billion) in monthly transfer volume for the first time in March 2026. Merchant payments are the fastest-growing segment, up 88% year-on-year. BSP is linking InstaPay to Thailand's PromptPay and Indonesia's BI-FAST under the ASEAN Payment Connectivity initiative. Cross-border QR payments with Singapore launch in Q3 2026.",
     url:"https://bsp.gov.ph" },
 
   { country:"Philippines", theme:"Political Instability", date:"Apr 15, 2026",
     headline:"Marcos Administration Faces Senate Probe Over Confidential Intelligence Funds",
-    summary:"The Philippine Senate opened hearings into the Marcos administration's use of confidential and intelligence funds, following a Commission on Audit report flagging PHP 6.6 billion in unaccounted disbursements across executive agencies. Critics allege the funds were used to finance surveillance of opposition figures and journalists. The Palace denied wrongdoing, citing national-security exemptions. Digital-rights group Foundation for Media Alternatives warned that unregulated surveillance capabilities procured under the funds pose risks to online dissent. Senate hearings are scheduled to continue through May.",
+    summary:"The Philippine Senate opened hearings into the Marcos administration's use of confidential and intelligence funds, following a Commission on Audit report flagging PHP 6.6 billion in unaccounted disbursements. Critics allege the funds financed surveillance of opposition figures and journalists. Digital-rights group Foundation for Media Alternatives warned that unregulated surveillance capabilities pose risks to online dissent.",
     url:"https://senate.gov.ph" },
 
-  // THAILAND
+  // ── THAILAND ──
   { country:"Thailand", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Thailand Expands ThaID App to Cover 20 Government Services in Pilot Provinces",
-    summary:"The Department of Provincial Administration extended ThaID, Thailand's official digital-identity app, to 20 government service categories including land-registration queries, court-date scheduling, and welfare-payment tracking. The pilot runs in Chiang Mai, Khon Kaen, and Songkhla before national rollout. ThaID uses facial recognition against the civil-registry database for liveness-checked authentication. The NECTEC-developed backend processes 500,000 daily authentications. Thailand is also in talks with Singapore to recognise ThaID for cross-border digital service access as part of ASEAN Digital Integration initiatives.",
+    summary:"The Department of Provincial Administration extended ThaID, Thailand's official digital-identity app, to 20 government service categories including land-registration queries, court-date scheduling, and welfare-payment tracking. The pilot runs in Chiang Mai, Khon Kaen, and Songkhla. ThaID's NECTEC-developed backend processes 500,000 daily authentications. Thailand is in talks with Singapore to recognise ThaID for cross-border digital service access.",
     url:"https://www.dopa.go.th" },
 
   { country:"Thailand", theme:"DPI", date:"Apr 18, 2026",
-    headline:"Nation Thailand: Biz Portal Cuts SME Licensing Time From 28 Days to 3 Hours",
-    summary:"Thailand's Biz Portal, a single-window business-licensing platform operated by the Electronic Transactions Development Agency (ETDA), reduced average SME licensing time from 28 days to 3 hours following an AI-powered document-validation upgrade. The platform now integrates 32 licensing authorities under a single API gateway. Applications submitted via Biz Portal increased 140% in Q1 2026. The World Bank's Doing Business successor index cited Biz Portal as a primary driver of Thailand rising 11 positions in the starting-a-business indicator. ETDA plans to integrate environmental-impact permits by Q4 2026.",
+    headline:"Biz Portal Cuts SME Licensing Time From 28 Days to 3 Hours",
+    summary:"Thailand's Biz Portal, operated by the Electronic Transactions Development Agency (ETDA), reduced average SME licensing time from 28 days to 3 hours following an AI-powered document-validation upgrade. The platform integrates 32 licensing authorities under a single API gateway. Applications via Biz Portal increased 140% in Q1 2026. The World Bank's Doing Business successor index cited Biz Portal as a primary driver of Thailand rising 11 positions.",
     url:"https://www.nationthailand.com" },
 
   { country:"Thailand", theme:"AI", date:"Apr 17, 2026",
     headline:"NECTEC and PTT Group Deploy AI for Predictive Maintenance in Gas Pipelines",
-    summary:"Thailand's National Electronics and Computer Technology Center (NECTEC) partnered with PTT Group to deploy an AI-powered predictive maintenance system across 4,000 km of natural-gas pipelines. The system uses sensor fusion and anomaly-detection algorithms to flag corrosion and pressure anomalies 72 hours before failure. Initial deployment prevented two potential ruptures, saving an estimated THB 800 million in emergency repair costs. The collaboration is part of Thailand's Eastern Economic Corridor (EEC) AI industrial programme, which targets AI adoption across energy, automotive, and healthcare by 2027.",
+    summary:"Thailand's NECTEC partnered with PTT Group to deploy an AI-powered predictive maintenance system across 4,000 km of natural-gas pipelines. The system uses sensor fusion and anomaly-detection algorithms to flag corrosion 72 hours before failure. Initial deployment prevented two potential ruptures, saving an estimated THB 800 million. The collaboration is part of Thailand's Eastern Economic Corridor AI industrial programme.",
     url:"https://www.nectec.or.th" },
 
   { country:"Thailand", theme:"Political Instability", date:"Apr 16, 2026",
-    headline:"Constitutional Court Rules on PM Paetongtarn's Cabinet Reshuffle Challenge",
-    summary:"Thailand's Constitutional Court accepted a petition challenging Prime Minister Paetongtarn Shinawatra's second cabinet reshuffle, filed by opposition MPs alleging procedural violations in ministerial appointments. The court issued an interim order requiring the new cabinet members to remain in an acting capacity until the case is resolved. Markets responded with a 1.4% drop in the SET index. Political analysts note the legal challenge reflects ongoing instability in coalition management, with the Pheu Thai-led government relying on a fragile multi-party coalition that controls only a slim parliamentary majority.",
+    headline:"Constitutional Court Accepts Challenge to PM Paetongtarn's Cabinet Reshuffle",
+    summary:"Thailand's Constitutional Court accepted a petition challenging Prime Minister Paetongtarn Shinawatra's cabinet reshuffle, filed by opposition MPs alleging procedural violations. The court issued an interim order requiring new cabinet members to remain in an acting capacity. Markets responded with a 1.4% drop in the SET index. Political analysts note the challenge reflects ongoing instability in the Pheu Thai-led coalition.",
     url:"https://www.nationthailand.com" },
 
   { country:"Thailand", theme:"Digital Leaders", date:"Apr 15, 2026",
     headline:"ETDA Chief Outlines 5-Year Digital Infrastructure Masterplan for Rural Thailand",
-    summary:"Electronic Transactions Development Agency director-general Dr. Nuttapon Nimmanphatcharin presented a 5-year digital-infrastructure masterplan targeting universal broadband coverage and 5G rollout to all 77 provinces by 2030. The plan allocates THB 12 billion to fibre-optic last-mile expansion in highland and southern border districts. Digital literacy programmes will reach 2 million citizens annually through tambon-level digital community centres. Nuttapon emphasised AI readiness and data-sovereignty principles as cross-cutting themes, noting Thailand's digital-economy GDP share must reach 30% by 2030 to meet national targets.",
+    summary:"ETDA director-general Dr. Nuttapon Nimmanphatcharin presented a 5-year masterplan targeting universal broadband and 5G rollout to all 77 provinces by 2030. The plan allocates THB 12 billion to fibre-optic expansion in highland and southern border districts. Digital literacy programmes will reach 2 million citizens annually through tambon-level digital community centres.",
     url:"https://www.etda.or.th" },
 
-  // SRI LANKA
+  // ── SRI LANKA ──
   { country:"Sri Lanka", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Sri Lanka Begins Issuing Digital National Identity Cards Under New Act",
-    summary:"Sri Lanka's Department for Registration of Persons began issuing the first batch of Digital National Identity Cards (DNIC) under the newly enacted Digital Identity Act 2025. The DNIC combines a physical card with a mobile digital credential accessible via the Sri Lanka Digital Wallet app. Citizens can use DNIC for government service authentication, eliminating the need to carry the physical card. The World Bank's ID4D programme is providing technical assistance. Sri Lanka's biometric enrolment database, built with UNHCR support to include refugee populations, is integrated into the DNIC backend.",
+    summary:"Sri Lanka's Department for Registration of Persons began issuing Digital National Identity Cards (DNIC) under the Digital Identity Act 2025. The DNIC combines a physical card with a mobile credential accessible via the Sri Lanka Digital Wallet app. The World Bank's ID4D programme is providing technical assistance. Sri Lanka's biometric enrolment database, built with UNHCR support to include refugee populations, is integrated into the DNIC backend.",
     url:"https://drp.gov.lk" },
 
   { country:"Sri Lanka", theme:"DPI", date:"Apr 18, 2026",
     headline:"Lanka Pay Integrates With CBSL's Open Banking API to Unify Merchant Payments",
-    summary:"Lanka Pay, Sri Lanka's payment network, integrated with the Central Bank's Open Banking API framework to create a unified merchant-payment interface across all licensed banks and payment processors. Merchants can now accept payments from any Sri Lankan bank account or e-wallet via a single QR code. Transaction volumes on the unified network exceeded LKR 80 billion in March. The integration positions Lanka Pay to join the SAARC regional payment network being championed by the Reserve Bank of India as an interoperability hub for South Asia.",
+    summary:"Lanka Pay integrated with the Central Bank's Open Banking API framework to create a unified merchant-payment interface across all licensed banks and payment processors. Merchants can now accept payments from any Sri Lankan bank account via a single QR code. Transaction volumes exceeded LKR 80 billion in March. The integration positions Lanka Pay to join the SAARC regional payment network championed by the Reserve Bank of India.",
     url:"https://www.lankaclear.com" },
 
   { country:"Sri Lanka", theme:"AI", date:"Apr 17, 2026",
     headline:"ICTA Launches AI Innovation Challenge for Sinhala and Tamil NLP Solutions",
-    summary:"The Information and Communication Technology Agency (ICTA) of Sri Lanka launched a national AI innovation challenge focused on natural-language processing tools in Sinhala and Tamil. The challenge offers LKR 10 million in prizes and cloud-compute credits. Submissions must address at least one public-service use case: translation of government documents, voice-based service navigation, or automated grievance processing. ICTA has made its digitised corpus of 50 million government documents available as a training dataset under a research licence. Forty-three teams from universities and startups have registered.",
+    summary:"The Information and Communication Technology Agency launched a national AI innovation challenge focused on NLP tools in Sinhala and Tamil. The challenge offers LKR 10 million in prizes and cloud-compute credits. Submissions must address at least one public-service use case. ICTA made its digitised corpus of 50 million government documents available as a training dataset. Forty-three teams have registered.",
     url:"https://icta.lk" },
 
   { country:"Sri Lanka", theme:"Political Instability", date:"Apr 16, 2026",
-    headline:"IMF Reviews Sri Lanka Debt Restructuring Progress as Bilateral Creditor Talks Stall",
-    summary:"The International Monetary Fund concluded its fourth review of Sri Lanka's Extended Fund Facility programme, approving the next USD 337 million tranche while noting delays in bilateral creditor negotiations with China. The IMF urged faster progress on state-owned-enterprise reforms, particularly Ceylon Petroleum Corporation and Sri Lanka Telecom. Political pressure from trade unions opposing privatisation has slowed parliamentary approval of reform legislation. Inflation has returned to single digits at 4.2%, but the rupee remains fragile against dollar strength, complicating import costs and public-debt servicing.",
+    headline:"IMF Reviews Sri Lanka Debt Restructuring as Bilateral Creditor Talks Stall",
+    summary:"The IMF concluded its fourth review of Sri Lanka's Extended Fund Facility, approving a USD 337 million tranche while noting delays in bilateral creditor negotiations with China. The IMF urged faster state-owned-enterprise reforms. Political pressure from trade unions opposing privatisation has slowed parliamentary approval. Inflation has returned to 4.2%, but the rupee remains fragile.",
     url:"https://imf.org" },
 
   { country:"Sri Lanka", theme:"Digital Leaders", date:"Apr 15, 2026",
-    headline:"President Dissanayake Chairs First Meeting of National Digital Economy Council",
-    summary:"President Anura Kumara Dissanayake chaired the inaugural meeting of Sri Lanka's newly formed National Digital Economy Council, bringing together cabinet ministers, central-bank governor, and private-sector CEOs under a single coordination body for digital transformation. The council approved a 100-day digital-economy action plan covering DNIC rollout, open-banking launch, and a national data-centre strategy. Dissanayake emphasised that digital transformation must directly reduce the cost of public services for citizens recovering from the economic crisis, setting a target of LKR 50 billion in citizen savings through digital delivery by 2027.",
+    headline:"President Dissanayake Chairs Inaugural National Digital Economy Council Meeting",
+    summary:"President Anura Kumara Dissanayake chaired the inaugural meeting of Sri Lanka's National Digital Economy Council, bringing cabinet ministers, the central-bank governor, and private-sector CEOs together. The council approved a 100-day action plan covering DNIC rollout, open-banking launch, and a national data-centre strategy, targeting LKR 50 billion in citizen savings through digital delivery by 2027.",
     url:"https://president.gov.lk" },
 
-  // NEPAL
+  // ── NEPAL ──
   { country:"Nepal", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Nepal's National ID Card Programme Reaches 14 Million Enrolments",
-    summary:"The Department of National ID and Civil Registration (DONIDCR) reported 14 million National ID card enrolments, covering 55% of Nepal's eligible population. Mobile enrolment camps in Karnali and Sudurpashchim provinces have accelerated coverage in remote mountain districts. The card integrates with the civil-registration database, allowing digital birth, death, and marriage certificate issuance. The World Bank's Identification for Development (ID4D) initiative provided USD 30 million for the programme. Nepal is now piloting mobile ID verification for social-protection payments under the Prime Minister Employment Programme.",
+    summary:"The Department of National ID and Civil Registration reported 14 million enrolments, covering 55% of Nepal's eligible population. Mobile enrolment camps in Karnali and Sudurpashchim have accelerated coverage in remote mountain districts. The World Bank's ID4D initiative provided USD 30 million for the programme. Nepal is piloting mobile ID verification for social-protection payments under the Prime Minister Employment Programme.",
     url:"https://donidcr.gov.np" },
 
   { country:"Nepal", theme:"DPI", date:"Apr 18, 2026",
-    headline:"Nepal Rastra Bank Launches Interoperable QR Payment Standard Across All Banks",
-    summary:"Nepal Rastra Bank (NRB) mandated the Nepal QR (NeQR) interoperable payment standard across all commercial and development banks, ending proprietary QR fragmentation. Merchants now need a single NeQR code to accept payments from eSewa, Khalti, IME Pay, and all mobile banking apps. NRB data shows real-time digital transactions grew 110% year-on-year in Q1 2026. The central bank will extend NeQR to cross-border payments with India under the bilateral payment-connectivity agreement signed in 2025, targeting live cross-border QR by December 2026.",
+    headline:"Nepal Rastra Bank Launches Interoperable NeQR Payment Standard",
+    summary:"Nepal Rastra Bank mandated the Nepal QR interoperable payment standard across all commercial and development banks, ending proprietary QR fragmentation. Merchants need a single NeQR code to accept payments from eSewa, Khalti, IME Pay, and all mobile banking apps. Real-time digital transactions grew 110% year-on-year. The central bank will extend NeQR to cross-border payments with India by December 2026.",
     url:"https://www.nrb.org.np" },
 
   { country:"Nepal", theme:"AI", date:"Apr 17, 2026",
-    headline:"Kathmandu Post: Nepal Launches First Government AI Lab at Tribhuvan University",
-    summary:"Nepal's Ministry of Communication and Information Technology inaugurated the country's first Government AI Research Laboratory at Tribhuvan University's Institute of Engineering. The lab, funded by a USD 5 million Asian Development Bank grant, focuses on Nepali-language AI, agricultural advisory systems, and disaster early-warning models for earthquake and flood risk. Twelve faculty and 40 graduate researchers will work alongside civil servants on priority government use cases. The lab also hosts a federated-learning facility that allows multiple government agencies to train shared models without centralising sensitive data.",
+    headline:"Nepal Launches First Government AI Lab at Tribhuvan University",
+    summary:"Nepal's Ministry of Communication inaugurated the country's first Government AI Research Laboratory at Tribhuvan University's Institute of Engineering, funded by a USD 5 million ADB grant. The lab focuses on Nepali-language AI, agricultural advisory systems, and disaster early-warning models for earthquake and flood risk. It hosts a federated-learning facility for multiple government agencies to train shared models without centralising sensitive data.",
     url:"https://kathmandupost.com" },
 
   { country:"Nepal", theme:"Political Instability", date:"Apr 16, 2026",
-    headline:"Rising Nepal Daily: Parliamentary Crisis as Coalition Partner Withdraws Support",
-    summary:"Nepal's fragile coalition government faced a parliamentary crisis after the Rastriya Swatantra Party (RSP) withdrew its support, leaving Prime Minister KP Sharma Oli's administration short of a majority. RSP cited disagreements over cabinet portfolios and the pace of federalism implementation. The President has given the PM seven days to prove majority support, triggering frenetic coalition negotiations. Political uncertainty has stalled the passage of the Digital Nepal Framework 2.0 bill and the long-delayed Data Protection Act, both awaiting second reading in parliament.",
+    headline:"Parliamentary Crisis as Coalition Partner Withdraws Support From Oli Government",
+    summary:"Nepal's fragile coalition faced a crisis after the Rastriya Swatantra Party withdrew support, leaving PM KP Sharma Oli's administration short of a majority. The President gave the PM seven days to prove majority support, triggering frenetic coalition negotiations. Political uncertainty has stalled the Digital Nepal Framework 2.0 bill and the long-delayed Data Protection Act.",
     url:"https://risingnepaldaily.com" },
 
   { country:"Nepal", theme:"Digital Leaders", date:"Apr 15, 2026",
-    headline:"Communications Minister Inaugurates High-Speed Internet for 77th Remote Vdcs",
-    summary:"Nepal's Minister of Communications and Information Technology, Prithivi Subba Gurung, inaugurated high-speed internet connectivity for the country's last 77 remote Village Development Committees (VDCs), completing the national broadband coverage mandate. The connectivity is delivered via a mix of fibre-optic last-mile and VSAT satellite links under the Rural Telecommunications Development Fund. Gurung set a new target: all government services accessible via mobile phone without branch visits by 2027, backed by a NRs 8 billion digital-service acceleration programme approved by cabinet.",
+    headline:"Communications Minister Completes National Broadband Coverage for Remote VDCs",
+    summary:"Nepal's Minister of Communications, Prithivi Subba Gurung, inaugurated connectivity for the last 77 remote Village Development Committees, completing the national broadband mandate via fibre-optic and VSAT links. Gurung set a new target: all government services accessible via mobile phone without branch visits by 2027, backed by a NRs 8 billion digital-service acceleration programme.",
     url:"https://moics.gov.np" },
 
-  // PNG
+  // ── PNG ──
   { country:"PNG", theme:"Digital ID", date:"Apr 19, 2026",
     headline:"Papua New Guinea Launches Civil Registry Modernisation With Digital ID Pilot",
-    summary:"Papua New Guinea's Department of Foreign Affairs and Immigration launched a civil-registry modernisation programme with World Bank support, piloting digital ID cards in the National Capital District. The pilot targets 500,000 adults, with biometric enrolment at post offices and community health posts. PNG has historically low civil-registration rates — under 30% of births are formally registered — making digital identity issuance complex. The programme links to a new integrated birth-registration system that allows hospital staff to register births electronically, automatically triggering ID enrolment for newborns.",
+    summary:"Papua New Guinea's Department of Foreign Affairs launched a civil-registry modernisation programme piloting digital ID cards in the National Capital District. The pilot targets 500,000 adults, with biometric enrolment at post offices and community health posts. PNG has historically low civil-registration rates — under 30% of births are formally registered. The programme links to a new birth-registration system allowing hospital staff to register births electronically.",
     url:"https://immigration.gov.pg" },
 
   { country:"PNG", theme:"DPI", date:"Apr 18, 2026",
-    headline:"PNG Sun: BSP Financial Group Extends Mobile Banking to Highland Provinces",
-    summary:"Bank South Pacific (BSP), PNG's largest commercial bank, expanded its BSP Mobile banking platform to 12 additional highland districts using 3G satellite uplinks where terrestrial connectivity is absent. The expansion targets 300,000 previously unbanked adults. BSP has also partnered with the Post PNG network to offer cash-in/cash-out services at 180 additional post-office branches. The Bank of Papua New Guinea is developing a national payment-systems regulation, expected by year-end, to formalise interoperability requirements and consumer-protection standards for mobile-money operators.",
+    headline:"BSP Financial Group Extends Mobile Banking to Highland Provinces",
+    summary:"Bank South Pacific expanded its mobile banking platform to 12 additional highland districts using 3G satellite uplinks. The expansion targets 300,000 previously unbanked adults. BSP partnered with Post PNG to offer cash-in/cash-out services at 180 additional post-office branches. The Bank of Papua New Guinea is developing a national payment-systems regulation to formalise interoperability requirements.",
     url:"https://www.pngsun.com" },
 
   { country:"PNG", theme:"AI", date:"Apr 17, 2026",
-    headline:"PNG University of Technology Partners With CSIRO on Tropical Agriculture AI Models",
-    summary:"Papua New Guinea University of Technology signed a research partnership with Australia's CSIRO to develop AI models for tropical-agriculture applications specific to PNG's climate and crops, including cocoa, oil palm, and coffee. The models will provide smallholder farmers with pest-detection and harvest-timing recommendations via SMS and a lightweight app designed for low-bandwidth environments. The AUD 3 million programme is funded by the Australian Government's Pacific AI Initiative. Field trials begin in Morobe and East New Britain provinces in June, reaching an estimated 20,000 farm households.",
+    headline:"PNG University of Technology Partners With CSIRO on Tropical Agriculture AI",
+    summary:"Papua New Guinea University of Technology signed a research partnership with Australia's CSIRO to develop AI models for tropical-agriculture applications including cocoa, oil palm, and coffee. The models provide smallholder farmers with pest-detection and harvest-timing recommendations via SMS. The AUD 3 million programme is funded by Australia's Pacific AI Initiative, with field trials in Morobe and East New Britain provinces reaching 20,000 farm households.",
     url:"https://unitech.ac.pg" },
 
   { country:"PNG", theme:"Political Instability", date:"Apr 16, 2026",
     headline:"PNG Parliament Debates Marape Government's Resource Revenue Transparency Bill",
-    summary:"Papua New Guinea's parliament is debating the Resource Revenue Transparency Bill introduced by the Marape government, which would require real-time public disclosure of LNG and mining royalties paid to provincial and local governments. The bill has strong backing from civil-society groups and development partners, but faces resistance from several coalition MPs representing resource-rich provinces who argue provincial autonomy provisions are inadequate. PNG's fiscal position remains strained, with resource revenues fluctuating due to LNG-price volatility, creating pressure on public-service delivery including digital-infrastructure investment.",
+    summary:"Papua New Guinea's parliament is debating the Resource Revenue Transparency Bill, which would require real-time public disclosure of LNG and mining royalties paid to provincial governments. The bill has strong backing from civil-society groups and development partners but faces resistance from coalition MPs representing resource-rich provinces. PNG's fiscal position remains strained due to LNG-price volatility.",
     url:"https://www.pngsun.com" },
 
   { country:"PNG", theme:"Digital Leaders", date:"Apr 15, 2026",
     headline:"ICT Minister Commits to PNG's First National Broadband Policy by Year-End",
-    summary:"Papua New Guinea's Minister for Information and Communication Technology, Timothy Masiu, committed to delivering the country's first comprehensive National Broadband Policy by December 2026. The policy will set spectrum-allocation rules, universal-service obligations for mobile operators, and subsidy mechanisms for rural connectivity. Masiu signed a memorandum with Digicel PNG and Telikom PNG to co-invest in submarine cable landing stations to reduce reliance on costly satellite bandwidth. The policy is a prerequisite for PNG's inclusion in the Pacific Digital Infrastructure Hub being developed with ADB support.",
+    summary:"Papua New Guinea's Minister for ICT, Timothy Masiu, committed to delivering the country's first National Broadband Policy by December 2026. The policy will set spectrum-allocation rules and universal-service obligations. Masiu signed a memorandum with Digicel PNG and Telikom PNG to co-invest in submarine cable landing stations. The policy is a prerequisite for PNG's inclusion in the Pacific Digital Infrastructure Hub.",
     url:"https://www.ictpng.gov.pg" },
 ];
 
-// ── SOURCES ───────────────────────────────────────────────────────────────────
-const SOURCES = [
-  "Reuters","Associated Press (AP)","BBC","Jakarta Post","Kompas",
-  "Bisnis Indonesia","The Daily Star (BD)","Nation Thailand","Kathmandu Post",
-  "Rising Nepal Daily","The PNG Sun","GovInsider Asia","Biometric Update",
-  "Tech Policy Press","Chatham House","World Bank","UNESCAP",
-  "UIDAI","MeitY","Reserve Bank of India","Bank Indonesia","Kominfo",
-  "PSA Philippines","DICT Philippines","BSP Philippines","ETDA Thailand"
+// ── MDB ARTICLES ──────────────────────────────────────────────────────────────
+const MDB_ARTICLES = [
+  // ── ADB ──
+  { country:"MDBs", org:"ADB", theme:"DPI", date:"Apr 18, 2026",
+    headline:"ADB Approves $500M Digital Connectivity Program for Southeast Asia",
+    summary:"The Asian Development Bank approved a $500 million Digital Connectivity Program targeting four Southeast Asian member countries — Indonesia, Philippines, Thailand, and Vietnam. The programme finances national broadband rollout, cross-border data-exchange standards, and open-source government-service platform development. ADB President Masato Kanda said the investment directly supports the ADB 2030 Strategy goal of inclusive digitalisation. Procurement of infrastructure will use the ADB Open Technology standard to prevent vendor lock-in.",
+    url:"https://www.adb.org/news" },
+
+  { country:"MDBs", org:"ADB", theme:"Digital ID", date:"Apr 17, 2026",
+    headline:"ADB Report: Digital ID Systems Reduce Financial Exclusion Across Asia Pacific",
+    summary:"A new Asian Development Bank report, 'Digital Identity for Inclusive Finance in Asia Pacific', found that countries with mature national digital-ID systems saw financial inclusion rates rise by an average of 18 percentage points over five years. Case studies cover India's Aadhaar, Philippines' PhilSys, and Bangladesh's NID. The report recommends a regional interoperability framework for digital identities and advocates for privacy-by-design principles in all ADB-funded ID projects. ADB commits $200 million in new ID4D-aligned grants by 2027.",
+    url:"https://www.adb.org/publications" },
+
+  { country:"MDBs", org:"ADB", theme:"Data Exchange", date:"Apr 16, 2026",
+    headline:"ADB Launches Open Finance Data Exchange Framework for ASEAN Members",
+    summary:"The Asian Development Bank launched the ASEAN Open Finance Data Exchange Framework, a common standard for consented cross-border financial data sharing among member states. The framework builds on existing bilateral agreements between Singapore, Thailand, and the Philippines. ADB's technical assistance team will help five additional countries — Indonesia, Vietnam, Cambodia, Laos, and Myanmar — adopt the standard by 2027. The framework is designed to enable real-time SME credit scoring using cross-border transaction data.",
+    url:"https://www.adb.org/what-we-do/themes/finance" },
+
+  { country:"MDBs", org:"ADB", theme:"AI", date:"Apr 15, 2026",
+    headline:"ADB's AI for Social Good Initiative Expands to Nepal, Bangladesh, and Sri Lanka",
+    summary:"The Asian Development Bank expanded its AI for Social Good initiative to Nepal, Bangladesh, and Sri Lanka, providing $45 million in grants and technical assistance for government AI pilots. Priority areas include AI-powered agricultural advisory services, early-warning systems for natural disasters, and automated government document processing in local languages. ADB will also fund AI ethics and safety training for 500 civil servants across the three countries over 18 months.",
+    url:"https://www.adb.org/what-we-do/sectors/information-communication-technology" },
+
+  { country:"MDBs", org:"ADB", theme:"Political Instability", date:"Apr 14, 2026",
+    headline:"ADB: Political Fragility Poses Growing Risk to Digital Transformation in South Asia",
+    summary:"The Asian Development Bank's annual Asian Development Outlook warns that political instability in South Asia is increasingly threatening digital transformation timelines. Countries experiencing governance transitions — including Bangladesh, Nepal, and Sri Lanka — have seen delays in DPI procurement, data-protection legislation, and national-ID rollouts. ADB recommends resilient multi-stakeholder governance structures for digital infrastructure that can withstand political transitions without programme disruption.",
+    url:"https://www.adb.org/publications/asian-development-outlook" },
+
+  // ── WORLD BANK ──
+  { country:"MDBs", org:"World Bank", theme:"DPI", date:"Apr 18, 2026",
+    headline:"World Bank G2Px Program Digitises Government-to-Person Payments in Asia",
+    summary:"The World Bank's G2Px program report confirmed that digitising government-to-person payments in Bangladesh and the Philippines has reduced leakage by 28% and cut administrative costs by 40% compared to cash-based systems. The programme facilitated direct transfer of social protection payments to 12 million beneficiaries using national digital ID for beneficiary verification. World Bank is extending G2Px to Nepal and PNG in 2026 with $120 million in new financing.",
+    url:"https://www.worldbank.org/en/topic/digitaldevelopment" },
+
+  { country:"MDBs", org:"World Bank", theme:"Digital ID", date:"Apr 17, 2026",
+    headline:"World Bank ID4D: 850 Million in Asia Pacific Still Lack Legal Identity",
+    summary:"The World Bank's Identification for Development (ID4D) 2026 Global Dataset reveals that approximately 850 million people across Asia Pacific still lack a government-recognised legal identity. The highest coverage gaps are in PNG, the Pacific island nations, rural Bangladesh, and eastern Indonesia. The World Bank calls for accelerated civil-registration reforms and investment in mobile enrolment infrastructure, estimating that closing the identity gap could unlock $1.2 trillion in economic participation across the region.",
+    url:"https://id4d.worldbank.org" },
+
+  { country:"MDBs", org:"World Bank", theme:"Data Exchange", date:"Apr 16, 2026",
+    headline:"World Bank: Data Sharing Frameworks Are Critical to Health Outcomes in Developing Asia",
+    summary:"A World Bank health-sector report, 'Connected Care in Developing Asia', found that countries with interoperable health data exchange frameworks had 32% better maternal and child health outcomes than those without. The report highlights Bangladesh's OpenHIE pilot, Nepal's integrated social registry, and the Philippines' PhilHealth-PhilSys integration as leading examples. The Bank calls for $2 billion in concessional financing for health-data infrastructure across 15 low- and middle-income countries in the region by 2028.",
+    url:"https://www.worldbank.org/en/topic/health" },
+
+  { country:"MDBs", org:"World Bank", theme:"AI", date:"Apr 15, 2026",
+    headline:"World Bank Report: AI Adoption Could Add 4.5% to Developing Asia GDP by 2030",
+    summary:"A World Bank economic research paper projects that developing Asia could add 4.5% to aggregate GDP by 2030 through AI adoption, with productivity gains concentrated in agriculture, manufacturing, and government services. The paper notes that Indonesia, India, and the Philippines are best positioned due to their digital infrastructure base and young workforce. However, it warns that AI-driven job displacement could increase inequality without active skills-transition policy. The Bank pledges $3 billion in AI-readiness lending.",
+    url:"https://www.worldbank.org/en/publication/wdr2026" },
+
+  { country:"MDBs", org:"World Bank", theme:"DPI", date:"Apr 14, 2026",
+    headline:"World Bank GovTech Maturity Index 2026: Indonesia and Philippines Lead Southeast Asia",
+    summary:"The World Bank's GovTech Maturity Index 2026 places Indonesia and the Philippines in the 'GovTech Transitioner' tier, the second-highest category, citing progress in whole-of-government digital platforms, open-data frameworks, and digital identity. India leads South Asia in the top 'GovTech Leader' tier alongside Singapore. Nepal and Bangladesh improved their scores by 12 and 9 points respectively. PNG remains in the 'Starter' tier, though its SevisPass DPI rollout is cited as a promising development.",
+    url:"https://www.worldbank.org/en/programs/govtech" },
 ];
 
+// Combined pool
+const ALL_ARTICLES = COUNTRY_ARTICLES.concat(MDB_ARTICLES);
+
+// ── SOURCES ───────────────────────────────────────────────────────────────────
+const SOURCES = {
+  country: ["Reuters","Associated Press (AP)","BBC","Jakarta Post","Kompas","Bisnis Indonesia",
+    "The Daily Star (BD)","Nation Thailand","Kathmandu Post","Rising Nepal Daily","The PNG Sun",
+    "GovInsider Asia","Biometric Update","Tech Policy Press","Chatham House","UNESCAP","UIDAI",
+    "MeitY","Reserve Bank of India","Bank Indonesia","PSA Philippines","DICT Philippines",
+    "BSP Philippines","ETDA Thailand","ID Tech Wire","India Policy Hub"],
+  mdb: ["ADB — Asian Development Bank","World Bank / ID4D","World Bank G2Px Programme",
+    "World Bank GovTech Maturity Index","ADB Asian Development Outlook","ADB Open Finance Framework"]
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentTab   = "all";
+let currentTheme = "all";
+
 // ── HELPERS ───────────────────────────────────────────────────────────────────
-function themeClass(t) {
-  return THEME_CLASS[t] || "theme-digital";
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
-function themeStyle(t) {
-  return (THEMES[t] || THEMES["Digital"]).grad;
-}
-function themeIcon(t) {
-  return (THEMES[t] || THEMES["Digital"]).icon;
-}
-function countryFlag(c) {
-  return COUNTRY_FLAGS[c] || "🌏";
-}
-function escapeHtml(s) {
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
+function themeGrad(t)  { return (THEMES[t]||THEMES["Digital"]).grad; }
+function themeIcon(t)  { return (THEMES[t]||THEMES["Digital"]).icon; }
+function themeCls(t)   { return THEME_CLASS[t]||"theme-digital"; }
+function cflag(c)      { return COUNTRY_FLAGS[c]||"🌏"; }
 
-// ── CARD RENDERER ─────────────────────────────────────────────────────────────
+// ── CARD HTML ─────────────────────────────────────────────────────────────────
 function cardHTML(a, featured) {
-  const cls = featured ? "card featured" : "card";
-  const bgStyle = `background:${themeStyle(a.theme)};`;
-  return `
-  <article class="${cls}" onclick="window.open('${a.url}','_blank')">
-    <div class="thumb">
-      <div class="thumb-bg" style="${bgStyle}">
-        <span style="position:relative;z-index:1">${themeIcon(a.theme)}</span>
-      </div>
-      <span class="thumb-flag">${countryFlag(a.country)}</span>
+  const isMDB = a.country === "MDBs";
+  const cls   = featured ? "card featured" : "card";
+  const bg    = isMDB ? MDB_GRAD : themeGrad(a.theme);
+  const icon  = isMDB ? "🏛️" : themeIcon(a.theme);
+  const flagEl = isMDB
+    ? `<span class="thumb-badge">${esc(a.org)}</span>`
+    : `<span class="thumb-flag">${cflag(a.country)}</span>`;
+  const orgEl = isMDB
+    ? `<span class="card-org" style="color:#60a5fa">${esc(a.org)}</span>`
+    : `<span class="card-org">${esc(a.country)}</span>`;
+  const headline = esc(a.headline || a.title || "");
+  return `<article class="${cls}" onclick="window.open('${esc(a.url)}','_blank')">
+  <div class="thumb">
+    <div class="thumb-bg" style="background:${bg}"><span style="position:relative;z-index:1">${icon}</span></div>
+    ${flagEl}
+  </div>
+  <div class="card-body">
+    <div class="card-meta">
+      <span class="badge ${themeCls(a.theme)}">${esc(a.theme)}</span>
+      ${orgEl}
+      <span class="card-date">${esc(a.date)}</span>
     </div>
-    <div class="card-body">
-      <div class="card-meta">
-        <span class="badge ${themeClass(a.theme)}">${escapeHtml(a.theme)}</span>
-        <span class="card-country">${escapeHtml(a.country)}</span>
-        <span class="card-date">${escapeHtml(a.date)}</span>
-      </div>
-      <h2 class="card-headline">${escapeHtml(a.headline)}</h2>
-      <p class="card-summary">${escapeHtml(a.summary)}</p>
-      <a class="card-link" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-        Read full story
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M1 6h10M6 1l5 5-5 5"/>
-        </svg>
-      </a>
-    </div>
-  </article>`;
+    <h2 class="card-headline">${headline}</h2>
+    <p class="card-summary">${esc(a.summary)}</p>
+    <a class="card-link" href="${esc(a.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+      Read full story
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 6h10M6 1l5 5-5 5"/></svg>
+    </a>
+  </div>
+</article>`;
 }
 
-// ── BUILD TABS ────────────────────────────────────────────────────────────────
-function buildTabs() {
-  const el = document.getElementById("tabs");
-  el.innerHTML = COUNTRIES.map(c =>
-    `<button class="tab${c.id==="all"?" active":""}" onclick="filter('${c.id}',this)">
-      ${c.flag} ${c.label}
-    </button>`
-  ).join("");
-}
-
-// ── BUILD GRID ────────────────────────────────────────────────────────────────
-function buildGrid(country) {
+// ── APPLY FILTERS ─────────────────────────────────────────────────────────────
+function applyFilters() {
   const main = document.getElementById("main");
-  const articlesByCountry = {};
+  let pool;
 
-  const pool = country === "all"
-    ? ARTICLES
-    : ARTICLES.filter(a => a.country === country);
-
-  if (country === "all") {
-    COUNTRIES.slice(1).forEach(c => {
-      articlesByCountry[c.id] = ARTICLES.filter(a => a.country === c.id);
-    });
+  if (currentTab === "MDBs") {
+    pool = MDB_ARTICLES;
+  } else if (currentTab === "all") {
+    pool = COUNTRY_ARTICLES;
   } else {
-    articlesByCountry[country] = pool;
+    pool = COUNTRY_ARTICLES.filter(a => a.country === currentTab);
+  }
+
+  if (currentTheme !== "all") {
+    pool = pool.filter(a => a.theme === currentTheme);
   }
 
   if (pool.length === 0) {
-    main.innerHTML = `<div class="empty"><h3>No articles found</h3><p>Check back after the next daily update.</p></div>`;
+    main.innerHTML = `<div class="empty"><h3>No articles match this filter</h3><p>Try a different theme or country.</p></div>`;
     return;
   }
 
   let html = "";
 
-  if (country === "all") {
-    COUNTRIES.slice(1).forEach(c => {
-      const arts = articlesByCountry[c.id];
-      if (!arts || arts.length === 0) return;
-      html += `<div class="country-divider">
-        <span class="flag">${c.flag}</span>
-        <h2>${c.label}</h2>
+  if (currentTab === "MDBs") {
+    // MDB intro + grid with ADB/WB dividers
+    html += `<div class="mdb-intro">
+      <h3>🏦 Multilateral Development Banks — Digital & DPI Watch</h3>
+      <p>News and analysis from the <strong>Asian Development Bank (ADB)</strong> and <strong>World Bank</strong> on Digital Public Infrastructure, Digital Identity, AI, and Data Exchange across the Asia-Pacific region and our 8 focus countries.</p>
+    </div>`;
+    ["ADB","World Bank"].forEach(org => {
+      const arts = pool.filter(a => a.org === org);
+      if (!arts.length) return;
+      const orgIcon = org === "ADB" ? "🏛️" : "🌍";
+      html += `<div class="section-divider mdb-divider">
+        <span class="flag">${orgIcon}</span>
+        <h2>${esc(org)}</h2>
         <div class="line"></div>
       </div>
       <div class="grid">`;
-      arts.forEach((a, i) => {
-        html += cardHTML(a, i === 0);
-      });
+      arts.forEach((a, i) => { html += cardHTML(a, i === 0); });
+      html += `</div>`;
+    });
+  } else if (currentTab === "all") {
+    COUNTRY_ORDER.forEach(c => {
+      const arts = pool.filter(a => a.country === c);
+      if (!arts.length) return;
+      html += `<div class="section-divider">
+        <span class="flag">${cflag(c)}</span>
+        <h2>${esc(c)}</h2>
+        <div class="line"></div>
+      </div>
+      <div class="grid">`;
+      arts.forEach((a, i) => { html += cardHTML(a, i === 0); });
       html += `</div>`;
     });
   } else {
-    html += `<div class="grid">`;
-    pool.forEach((a, i) => {
-      html += cardHTML(a, i === 0);
-    });
+    html = `<div class="grid">`;
+    pool.forEach((a, i) => { html += cardHTML(a, i === 0); });
     html += `</div>`;
   }
 
   main.innerHTML = html;
 }
 
-// ── BUILD SOURCES ─────────────────────────────────────────────────────────────
-function buildSources() {
-  const el = document.getElementById("sources");
-  el.innerHTML = `
-    <h3>News Sources</h3>
-    <div class="sources-grid">
-      ${SOURCES.map(s => `<span class="source-tag">${escapeHtml(s)}</span>`).join("")}
-    </div>
-    <p class="footer-copy">
-      Auto-updated daily via GitHub Actions · Google News RSS · Powered by D3.js &amp; Python ·
-      Updated ${escapeHtml(UPDATE_TIME)}
-    </p>`;
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function buildTabs() {
+  const el = document.getElementById("tabs");
+  let html = "";
+  COUNTRY_TABS.forEach((c, idx) => {
+    // insert divider before MDBs tab
+    if (c.mdb && idx > 0) html += `<span class="tab-divider"></span>`;
+    const mdbCls = c.mdb ? " tab-mdb" : "";
+    html += `<button class="tab${c.id==="all"?" active":""}${mdbCls}" onclick="setTab('${c.id}',this)">
+      ${c.flag} ${c.label}
+    </button>`;
+  });
+  el.innerHTML = html;
 }
 
-// ── FILTER ────────────────────────────────────────────────────────────────────
-function filter(country, btn) {
+// ── SETTERS ───────────────────────────────────────────────────────────────────
+function setTab(tab, btn) {
+  currentTab = tab;
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   btn.classList.add("active");
-  buildGrid(country);
+  applyFilters();
   document.getElementById("main").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
+function setTheme(theme, btn) {
+  currentTheme = theme;
+  document.querySelectorAll(".theme-pill").forEach(p => p.classList.remove("active"));
+  btn.classList.add("active");
+  applyFilters();
+}
+
+// ── SOURCES ───────────────────────────────────────────────────────────────────
+function buildSources() {
+  const el = document.getElementById("sources");
+  const countryTags = SOURCES.country.map(s => `<span class="source-tag">${esc(s)}</span>`).join("");
+  const mdbTags     = SOURCES.mdb.map(s => `<span class="source-tag mdb">${esc(s)}</span>`).join("");
+  el.innerHTML = `
+    <h3>News Sources</h3>
+    <div class="sources-grid">${countryTags}${mdbTags}</div>
+    <p class="footer-copy">Auto-updated daily via GitHub Actions · Google News RSS · ADB & World Bank news feeds · Updated ${esc(UPDATE_TIME)}</p>`;
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
-document.getElementById("weekLabel").textContent = WEEK_LABEL;
-document.getElementById("articleCount").textContent = ARTICLE_COUNT + " articles this week";
+document.getElementById("weekLabel").textContent    = WEEK_LABEL;
+document.getElementById("articleCount").textContent = ALL_ARTICLES.length + " articles this week";
 buildTabs();
-buildGrid("all");
+applyFilters();
 buildSources();
 </script>
 </body>
