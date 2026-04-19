@@ -479,6 +479,37 @@ svg text{user-select:none}
 ::-webkit-scrollbar-track{background:#161b22}
 ::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
 .upd{position:absolute;bottom:14px;right:220px;font-size:10px;color:#484f58;z-index:10;background:rgba(13,17,23,.7);padding:4px 8px;border-radius:6px;backdrop-filter:blur(4px)}
+#mob-drawer{display:none;position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #30363d;border-radius:16px 16px 0 0;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);z-index:600;max-height:72vh;flex-direction:column;overflow:hidden}
+#mob-drawer.open{transform:translateY(0)}
+#drawer-pill-row{padding:10px 0 4px;display:flex;flex-direction:column;align-items:center;cursor:pointer;flex-shrink:0}
+#drawer-pill{width:36px;height:4px;background:#30363d;border-radius:2px;margin-bottom:6px}
+#drawer-title{font-size:13px;font-weight:700;padding:4px 16px 10px;border-bottom:1px solid #21262d;flex-shrink:0;width:100%}
+#drawer-body{overflow-y:auto;flex:1;padding:0 16px 32px;-webkit-overflow-scrolling:touch}
+#mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:599}
+#mob-news-panel{display:none;position:fixed;inset:0;background:#0d1117;z-index:550;overflow-y:auto;padding-bottom:60px;-webkit-overflow-scrolling:touch}
+#mob-news-panel.visible{display:block}
+#mob-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:#161b22;border-top:1px solid #30363d;z-index:700;height:52px;justify-content:space-around;align-items:stretch}
+.mtab{flex:1;background:none;border:none;color:#8b949e;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:color .15s;border-top:2px solid transparent}
+.mtab.active{color:#58a6ff;border-top-color:#58a6ff}
+.mtab-icon{font-size:17px}
+@media(max-width:768px){
+body{height:100svh}
+#header{padding:8px 12px;flex-wrap:wrap;gap:4px}
+#header h1{font-size:13px}
+.hm{font-size:10px}
+.hm:last-child{display:none}
+#sb{display:none}
+#legend{display:none}
+#inst{display:none}
+#rb{display:none}
+.upd{display:none}
+#gc{height:calc(100svh - 52px - 52px)}
+#filters{flex-wrap:nowrap;overflow-x:auto;max-width:calc(100vw - 20px);-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;top:10px;left:10px}
+#filters::-webkit-scrollbar{display:none}
+.fb{white-space:nowrap;flex-shrink:0}
+#mob-drawer{display:flex}
+#mob-tabs{display:flex}
+}
 </style>
 </head>
 <body>
@@ -526,6 +557,24 @@ svg text{user-select:none}
   <div id="sb">
     <div id="sbh"><h2>Country News Details</h2><p>Click a country node or expand below</p></div>
   </div>
+</div>
+<div id="mob-overlay" onclick="closeMobDrawer()"></div>
+<div id="mob-drawer">
+  <div id="drawer-pill-row" onclick="closeMobDrawer()"><div id="drawer-pill"></div></div>
+  <div id="drawer-title"></div>
+  <div id="drawer-body"></div>
+</div>
+<div id="mob-news-panel">
+  <div style="padding:14px 16px;position:sticky;top:0;background:#0d1117;border-bottom:1px solid #30363d;z-index:10;display:flex;align-items:center;gap:10px">
+    <span style="font-size:16px">&#128240;</span>
+    <div><div style="font-size:14px;font-weight:700;color:#e6edf3">All News</div>
+    <div style="font-size:10px;color:#8b949e;margin-top:1px">8 countries &middot; tap article to open source</div></div>
+  </div>
+  <div id="mob-news-body"></div>
+</div>
+<div id="mob-tabs">
+  <button class="mtab active" id="mtab-graph" onclick="switchMobTab('graph')"><span class="mtab-icon">&#127760;</span>Graph</button>
+  <button class="mtab" id="mtab-news" onclick="switchMobTab('news')"><span class="mtab-icon">&#128240;</span>All News</button>
 </div>
 <div id="tt"></div>
 <script>
@@ -620,7 +669,10 @@ nd.filter(d=>d.type==='news')
   .on('click',(e,d)=>window.open(d.url,'_blank'));
 
 nd.filter(d=>d.type==='country')
-  .on('click',(e,d)=>{hlCountry(d.id);showSbCountry(d.id)});
+  .on('click',(e,d)=>{
+    if(window.innerWidth<=768){openMobDrawer(d.id);}
+    else{hlCountry(d.id);showSbCountry(d.id);}
+  });
 
 sim.on('tick',()=>{
   lnk.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
@@ -717,6 +769,67 @@ function showSbCountry(c){
 }
 
 buildSidebar();
+
+// ── MOBILE ──────────────────────────────────────────────────
+function openMobDrawer(cid){
+  const arts=ARTICLES.filter(a=>a.country===cid);
+  const col=COUNTRY_COLORS[cid];
+  const ov=COUNTRY_SUMMARIES[cid]||'';
+  document.getElementById('drawer-title').innerHTML=
+    `<span style="display:inline-block;width:10px;height:10px;background:${col};border-radius:50%;margin-right:7px;vertical-align:middle"></span>`+
+    `<span style="color:${col}">${cid}</span>`+
+    `<span style="font-size:10px;color:#8b949e;margin-left:8px">${arts.length} articles this week</span>`;
+  document.getElementById('drawer-body').innerHTML=
+    (ov?`<div style="padding:10px 0 12px;font-size:11px;color:#8b949e;line-height:1.6;border-bottom:1px solid #21262d;margin-bottom:8px"><strong style="color:#c9d1d9;display:block;margin-bottom:4px">&#128240; This Week</strong>${ov}</div>`:'')+
+    arts.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #21262d">
+      <span style="display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;background:${THEME_COLORS[a.theme]}18;color:${THEME_COLORS[a.theme]};border:1px solid ${THEME_COLORS[a.theme]}44">${a.theme}</span>
+      ${a.date?`<span style="font-size:10px;color:#6e7681;margin-left:6px">${a.date}</span>`:''}
+      <div style="font-size:12px;color:#c9d1d9;margin:6px 0 4px;line-height:1.45;font-weight:500">${a.title}</div>
+      <div style="font-size:11px;color:#8b949e;line-height:1.5;margin-bottom:6px">${a.summary}</div>
+      <a href="${a.url}" target="_blank" rel="noopener" style="font-size:12px;color:#58a6ff;text-decoration:none;font-weight:500">&#128279; Open source &#8594;</a>
+    </div>`).join('');
+  document.getElementById('mob-drawer').classList.add('open');
+  document.getElementById('mob-overlay').style.display='block';
+}
+function closeMobDrawer(){
+  document.getElementById('mob-drawer').classList.remove('open');
+  document.getElementById('mob-overlay').style.display='none';
+}
+function switchMobTab(tab){
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mtab-'+tab).classList.add('active');
+  const p=document.getElementById('mob-news-panel');
+  if(tab==='news'){p.classList.add('visible');buildMobNewsList();}
+  else p.classList.remove('visible');
+}
+function buildMobNewsList(){
+  const body=document.getElementById('mob-news-body');
+  if(body.dataset.built)return;
+  body.dataset.built='1';
+  body.innerHTML=COUNTRIES.map(c=>{
+    const arts=ARTICLES.filter(a=>a.country===c);
+    const col=COUNTRY_COLORS[c];
+    return`<div style="border-bottom:2px solid #21262d"><div style="padding:12px 16px 0">
+      <div style="font-size:14px;font-weight:700;color:${col};display:flex;align-items:center;gap:7px;margin-bottom:8px">
+        <span style="display:inline-block;width:10px;height:10px;background:${col};border-radius:50%"></span>${c}
+        <span style="font-size:10px;color:#6e7681;font-weight:400">${arts.length} articles</span></div>
+      ${arts.map(a=>`<div style="padding:9px 0;border-top:1px solid #21262d">
+        <span style="display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;background:${THEME_COLORS[a.theme]}18;color:${THEME_COLORS[a.theme]};border:1px solid ${THEME_COLORS[a.theme]}44">${a.theme}</span>
+        ${a.date?`<span style="font-size:10px;color:#6e7681;margin-left:5px">${a.date}</span>`:''}
+        <div style="font-size:12px;color:#c9d1d9;margin:5px 0 4px;line-height:1.45;font-weight:500">${a.title}</div>
+        <div style="font-size:11px;color:#8b949e;line-height:1.5;margin-bottom:5px">${a.summary.slice(0,160)}${a.summary.length>160?'\\u2026':''}</div>
+        <a href="${a.url}" target="_blank" rel="noopener" style="font-size:12px;color:#58a6ff;text-decoration:none">&#128279; Open &#8594;</a>
+      </div>`).join('')}
+    </div></div>`;
+  }).join('');
+}
+// Swipe-down to close drawer
+(function(){
+  let sy=0;
+  const el=document.getElementById('mob-drawer');
+  el.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+  el.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy>60)closeMobDrawer();},{passive:true});
+})();
 
 window.addEventListener('resize',()=>{
   W=gc.clientWidth;H=gc.clientHeight;
